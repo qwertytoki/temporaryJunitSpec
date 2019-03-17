@@ -829,7 +829,7 @@ public class OrderManagementServiceImpl implements OrderManagementService {
     }
 
     /**
-     * showInboxForExpand.
+     * Return first 5 orders for display by parameter's conditions
      *
      * @param userId
      *            the user id

@@ -1428,3 +1428,14 @@ Assert:
 	captor1.getValue()[1].orderStatusName == "vo3"
 
 ==========================================================
+loadConfirmExpand(String key)
+
+Arrange:
+
+Mock:
+
+Act:
+
+Assert:
+
+==========================================================
