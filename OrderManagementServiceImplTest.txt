@@ -1405,3 +1405,26 @@ Assert:
 	resultList[1].sendMethodName == "sup3SendMethod"
 
 ==========================================================
+showInboxForExpand(String userId, long corpId, UserSegmentEnum userSegmentValue, String type, String supplierName)
+
+Arrange:
+	ResponsibleOrderInboxVo vo1,vo2,vo3
+	vo1.orderStarusName="vo1"
+	vo2.orderStarusName="vo2"
+	vo3.orderStarusName="vo3"
+	vo1.supplierName = "supName"
+	vo2.supplierName = "notSup"
+	vo3.supplierName = "supName"
+	List<ResponsibleOrderInboxVo> volist = Arrays.asLis(vo1,vo2,vo3)
+
+Mock:
+	getFilteredRecords(ANY) :Return voList
+Act:
+	showInboxForExpand(ANY,ANY,ANY,ANY,"supName")
+Assert:
+	verify(OrderManagementService, times(1)).setWaitForIssuanceData(captor1,captor2);
+	captor1.getValue().size() == 2
+	captor1.getValue()[0].orderStatusName == "vo1"
+	captor1.getValue()[1].orderStatusName == "vo3"
+
+==========================================================
