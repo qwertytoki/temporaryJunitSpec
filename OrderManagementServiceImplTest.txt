@@ -1439,3 +1439,406 @@ Act:
 Assert:
 
 ==========================================================
+checkOrderModifiedRemandedStatus(List<ResponsibleOrderInboxVo> responsibleOrderEntityList)
+Arrange:
+
+Mock:
+
+Act:
+
+Assert:
+==========================================================
+loadLazyForApplying(OrderManagementEntity orderManagementEntity, UserSegmentEnum userSegment)
+
+Arrange:
+
+Mock:
+
+Act:
+
+Assert:
+==========================================================
+
+loadLazyPendingOrderPending(OrderManagementEntity orderManagementEntity, UserSegmentEnum userSegment)
+
+Arrange:
+
+Mock:
+
+Act:
+
+Assert:
+==========================================================
+getDraftDatagetDraftData(String userId, UserSegmentEnum userSegment, String type, long corpId, String dataValue, String modeValue)
+
+Arrange:
+
+Mock:
+
+Act:
+
+Assert:
+==========================================================
+loadLazyWaitIssuance(OrderManagementEntity orderManagementEntity,UserSegmentEnum userSegment)
+Arrange:
+
+Mock:
+
+Act:
+
+Assert:
+==========================================================
+loadSwitchToVendor(UserSegmentEnum userSegment)
+Arrange:
+
+Mock:
+
+Act:
+
+Assert:
+==========================================================
+loadLazyWaitingForDelivery(OrderManagementEntity orderManagementEntity, UserSegmentEnum userSegment)
+Arrange:
+
+Mock:
+
+Act:
+
+Assert:
+==========================================================
+getVendorFilteredRecords(String userId, long corporationId, UserSegmentEnum userSegment)
+Arrange:
+
+Mock:
+
+Act:
+
+Assert:
+==========================================================
+assignToUser(String orderStrId, String type)
+Arrange:
+
+Mock:
+
+Act:
+
+Assert:
+==========================================================
+insertChangedPurchaser(OrderManagementEntity orderManagementEntity)
+Arrange:
+
+Mock:
+
+Act:
+
+Assert:
+==========================================================
+insertToHeaderEntity(OrderHeaderEntity orderHeaderEntity, UUID orderId, OrderManagementEntity orderManagementEntity)
+Arrange:
+
+Mock:
+
+Act:
+
+Assert:
+==========================================================
+insertToPlanHeaderEntity(OrderPlanHeaderEntity orderPlanHeaderEntity, UUID orderId, OrderManagementEntity orderManagementEntity) 
+Arrange:
+
+Mock:
+
+Act:
+
+Assert:
+==========================================================
+setOrderAvailabletoPromiseData(UUID orderId)
+Arrange:
+
+Mock:
+
+Act:
+
+Assert:
+==========================================================
+setResponsibleOrderData(UUID orderId)
+Arrange:
+
+Mock:
+
+Act:
+
+Assert:
+==========================================================
+setOrderDashboardData(UUID orderId) 
+Arrange:
+
+Mock:
+
+Act:
+
+Assert:
+==========================================================
+zipFormattedData(List<String> orderIdList, String isDownload)
+Arrange:
+
+Mock:
+
+Act:
+
+Assert:
+==========================================================
+loadDialogData(OrderManagementEntity orderManagementEntity)
+Arrange:
+
+Mock:
+
+Act:
+
+Assert:
+==========================================================
+getMessageWithParam(String textId)
+Arrange:
+
+Mock:
+
+Act:
+
+Assert:
+==========================================================
+
+downloadSelectedData(UUID orderId, List<String> listValue)
+Arrange:
+
+Mock:
+
+Act:
+
+Assert:
+==========================================================
+printSelectedData(List<String> orderIdStrings)
+Arrange:
+
+Mock:
+
+Act:
+
+Assert:
+==========================================================
+inputContractDate(OrderManagementEntity orderManagementEntity)
+Arrange:
+
+Mock:
+
+Act:
+
+Assert:
+==========================================================
+insertData(List<String> sessionList, OrderManagementEntity orderManagementEntity)]
+Arrange:
+
+Mock:
+
+Act:
+
+Assert:
+==========================================================
+etZonedDate(Object objectValue)
+Arrange:
+
+Mock:
+
+Act:
+
+Assert:
+==========================================================
+loadOrderDate(List<String> orderBarcodeList, Map<String, Object> returnMap)
+Arrange:
+
+Mock:
+
+Act:
+
+Assert:
+==========================================================
+
+loadDialogDataValue(OrderManagementEntity orderManagementEntity)
+Arrange:
+
+Mock:
+
+Act:
+
+Assert:
+==========================================================
+createRecieptEntity(OrderHeaderEntity orderHeaderEntity,List<OrderDetailEntity> orderDetailEntityList)
+Arrange:
+
+Mock:
+
+Act:
+
+Assert:
+==========================================================
+convertToLocalDate(ZonedDateTime desiredDeliveryDateTime)
+Arrange:
+
+Mock:
+
+Act:
+
+Assert:
+==========================================================
+performAutoComplete(String keyword, int caretPosition)
+Arrange:
+
+Mock:
+
+Act:
+
+Assert:
+==========================================================
+replaceHighlight(String keyword, String columnValue)
+Arrange:
+
+Mock:
+
+Act:
+
+Assert:
+==========================================================
+getSwitchToVendorPrintOrderId(String userId, long corpId, UserSegmentEnum userSegment,String type, List<String> supplierNameList)
+Arrange:
+
+Mock:
+
+Act:
+
+Assert:
+==========================================================
+getDetailServiceIdFromInputServiceId(ServiceManager serviceManager, String serviceId)
+Arrange:
+
+Mock:
+
+Act:
+
+Assert:
+==========================================================
+loadLazyProvisionalOrderPending(OrderManagementEntity orderManagementEntity,UserSegmentEnum userSegment)
+Arrange:
+
+Mock:
+
+Act:
+
+Assert:
+==========================================================
+inputGroupContractDate(OrderManagementEntity orderManagementEntity)
+Arrange:
+
+Mock:
+
+Act:
+
+Assert:
+==========================================================
+confirmOrder(OrderManagementEntity orderManagementEntity)
+Arrange:
+
+Mock:
+
+Act:
+
+Assert:
+==========================================================
+updateOrderHeader(List<String> orderIdStringList)
+Arrange:
+
+Mock:
+
+Act:
+
+Assert:
+==========================================================
+insertOrderConfirmationAnswer(List<String> orderIdStringList)
+Arrange:
+
+Mock:
+
+Act:
+
+Assert:
+==========================================================
+insertContractDateForBarcode(String orderStringId, ZonedDateTime zonedDateTime)
+Arrange:
+
+Mock:
+
+Act:
+
+Assert:
+==========================================================
+getOrderType(long corpId, PrintOrderSettingMstEntity printOrderSettingMstEntity)
+Arrange:
+
+Mock:
+
+Act:
+
+Assert:
+==========================================================
+setOrderType(PrintOrderSettingMstEntity printOrderSettingMstEntity)
+Arrange:
+
+Mock:
+
+Act:
+
+Assert:
+==========================================================
+
+printFormtypeSortedData(List<String> orderIdList)
+Arrange:
+
+Mock:
+
+Act:
+
+Assert:
+==========================================================
+convertToUUID(String orderId)
+Arrange:
+
+Mock:
+
+Act:
+
+Assert:
+==========================================================
+printSortedData(List<String> orderIdList)
+Arrange:
+
+Mock:
+
+Act:
+
+Assert:
+==========================================================
+getPersonDetails(UUID departmentInChargeId, String searchKey, boolean suggestFlag)
+Arrange:
+
+Mock:
+
+Act:
+
+Assert:
+==========================================================
+getDepartmentDetails(UUID orderId, String orderType)
+Arrange:
+
+Mock:
+
+Act:
+
+Assert:
+==========================================================
