@@ -1,0 +1,1361 @@
+#JUnitTest
+
+
+loadWaitingForDeliveryList()
+
+Arrange:
+	ResponsibleOrderInboxVo vo1
+	vo1.orderStatus = "WAITING_FOR_ATP_ANSWER"
+	ResponsibleOrderInboxVo vo2
+	vo2.orderStatus = "WAITING_FOR_ATP_ANSWER"
+	ResponsibleOrderInboxVo vo3
+	vo3.orderStatus = "WAITING_FOR_ATP_ANSWER"
+	ResponsibleOrderInboxVo voNotWaitingATP
+	voNotWaitingATP.orderStatus = "NOT_WAITING"
+	
+	List<ResponsibleOrderInboxVo> waitingForDeliveryList = Arrays of(vo1,vo2,vo3,voNotWaitingATP)
+	Map<String, Object> resultMap
+	resultMap.put("filterWaitDataEntityList",waitingForDeliveryList)
+	
+Mock:
+	getFilteredRecords(ANY) : return waitingForDeliveryList 
+	setWaitingForDeliveryData(filterWaitDataEntityList):return resultMap
+Act: 
+	Map<String, Object> returnedMap = loadWaitingForDeliveryList(ANY,ANY)
+
+Assert:
+	returnedMap.get("filterWaitDataEntityList")[0] == vo1
+	returnedMap.get("filterWaitDataEntityList")[1] == vo2
+	returnedMap.get("filterWaitDataEntityList")[2] == vo3
+	returnMap.size == 3
+
+==========================================================
+loadEmptyMethod()
+
+//FIXME
+Return value shoud not be void but List<ResponsibleOrderInboxVo> responsibleOrderVos
+
+Arrange:
+	ZonedDateTime today =  ZonedDateTime.now()
+	ResponsibleOrderEntity entity
+	UUID orderingEmployee = UUID.randomUUID();
+
+	entity.orderNo = "test";
+	entity.orderDate = today;
+	entity.deliveryDate = today;
+	entity.requestDate = today;
+	entity.savedDate = today
+	entity.title = "test";
+	entity.baseDate = today
+	entity.cause = "test";
+	entity.causeDispName = "test";
+	entity.lastModified = "test";
+	entity.lastUpdateUser = "test";
+	entity.orderId = "test";
+	entity.orderingPersonInChargeId = orderingEmployee
+	entity.orderingPersonInChargeName = "test";
+	entity.orderStatus = "test";
+	entity.orderStatusName = "test";
+	entity.productClassification = "test";
+	entity.productClassificationName = "test";
+	entity.purchaseType = "test";
+	entity.requestor = "test";
+	entity.requestorDepartment = "test";
+	entity.requestorDepartmentName = "test";
+	entity.requestorName = "test";
+	entity.sendMethod = "test";
+	WapInboxTagRendererVo status = new WapInboxTagRendererVo.Builder().value("test").build();
+	entity.sendMethodName = "test";
+	entity.supplier = "test";
+	entity.supplierName = "test";
+	entity.swServiceDefId = "test";
+	entity.swServiceId = "test";
+	entity.corpId = 123
+	entity.type = "Type"
+	entity.userId = "userId"
+
+Mock:
+
+Act:
+	List<ResponsibleOrderInboxVo> voList =loadEmptyMethod(ANY,ANY,...,ANY,entity,123,"Type","userId")
+Assert:
+	today = DateTimeUtils.format(LocalDate.parse(today.toString()),DateStyle.LONG_NO_YEAR_WITH_DAY);
+	vo = voList[0]
+	vo.orderNo == "test";
+	vo.orderDate == today;
+	vo.deliveryDate == today;
+	vo.requestDate == today;
+	vo.savedDate == today
+	vo.title == "test";
+	vo.baseDate == today
+	vo.cause == "test";
+	vo.causeDispName == "test";
+	vo.lastModified == "test";
+	vo.lastUpdateUser == "test";
+	vo.orderId == "test";
+	vo.orderingPersonInChargeId == orderingEmployee
+	vo.orderingPersonInChargeName == "test";
+	vo.orderStatus == "test";
+	vo.orderStatusName == "test";
+	vo.productClassification == "test";
+	vo.productClassificationName == "test";
+	vo.purchaseType == "test";
+	vo.requestor == "test";
+	vo.requestorDepartment == "test";
+	vo.requestorDepartmentName == "test";
+	vo.requestorName == "test";
+	vo.sendMethod == "test";
+	vo.sendMethodName == "test";
+	vo.supplier == "test";
+	vo.supplierName == "test";
+	vo.swServiceDefId == "test";
+	vo.swServiceId == "test";
+	vo.corpId == 123
+	vo.type == "Type"
+	vo.userId == "userId"
+
+==========================================================
+getFilteredRecords()
+
+//FIXME
+loadEmptyMethod(ANY) should get List<ResponsibleOrderInboxVo> responsibleOrderVos
+
+Arrange:
+	String typeOfWaiting = "WAITING_FOR_PROVISIONAL_ORDER_COMMITION"
+        String typeOfNotWaiting = "UNUSED_TYPE"
+	UUID u1 = UUID.randomUUID();
+	UUID u2 = UUID.randomUUID();
+
+	ResponsibleOrderEntity entity
+	List<ResponsibleOrderEntity> entityList = Arrays.asList(entity)
+	ResponsibleOrderInboxVo vo 
+	List<ResponsibleOrderInboxVo> voList = Arrays.asList(vo)
+
+Mock:
+	loadProvisionalData(ANY) :return entity
+	loadSorting(ANY) :return entityList 
+	loadEmptyMethod(ANY) :return voList 
+	scmUserContext.getActiveDeptInChargeId() return null
+	scmUserContext.getPersonInCharge() return u2
+	
+Act:
+	List<ResponsibleOrderInboxVo> listOfNotWaiting = getFilteredRecords(ANY,ANY,typeOfNotWaiting,ANY,ANY,ANY)
+	
+Assert:
+	listOfNotWaiting[0].get(deptInChargeId)
+
+==========================================================
+getFilteredRecordsDeptIsNull()
+
+//FIXME
+loadEmptyMethod(ANY) should get List<ResponsibleOrderInboxVo> responsibleOrderVos
+
+Arrange:
+	String typeOfWaiting = "WAITING_FOR_PROVISIONAL_ORDER_COMMITION"
+        String typeOfNotWaiting = "UNUSED_TYPE"
+	UUID u1 = UUID.randomUUID();
+	UUID u2 = UUID.randomUUID();
+	ResponsibleOrderEntity entity
+	List<ResponsibleOrderEntity> entityList = Arrays.asList(entity)
+	ResponsibleOrderInboxVo vo = ResponsibleOrderInboxVo.builder()
+	List<ResponsibleOrderInboxVo> voList = Arrays.asList(vo)
+
+Mock:
+	loadEmptyMethod(ANY) :return voList 
+	scmUserContext.getActiveDeptInChargeId() return u1 
+	scmUserContext.getPersonInCharge() return null
+	responsibleOrderDao.getFilteredRecords(null, ANY,ANY,ANY,ANY) return  entityList 
+	responsibleOrderDao.getFilteredRecords(ANY, null,ANY,ANY,ANY) return null 
+
+Act:
+	List<ResponsibleOrderInboxVo> listOfNotWaiting = getFilteredRecords(ANY,ANY,typeOfNotWaiting,ANY,ANY,ANY)
+	
+Assert:
+	listOfNotWaiting .size ==1
+
+
+==========================================================
+getFilteredRecordsPersonIsNull()
+
+//FIXME
+loadEmptyMethod(ANY) should get List<ResponsibleOrderInboxVo> responsibleOrderVos
+
+Arrange:
+	String typeOfWaiting = "WAITING_FOR_PROVISIONAL_ORDER_COMMITION"
+        String typeOfNotWaiting = "UNUSED_TYPE"
+	UUID u1 = UUID.randomUUID();
+	UUID u2 = UUID.randomUUID();
+	ResponsibleOrderEntity entity
+	List<ResponsibleOrderEntity> entityList = Arrays.asList(entity)
+	ResponsibleOrderInboxVo vo = ResponsibleOrderInboxVo.builder()
+	List<ResponsibleOrderInboxVo> voList = Arrays.asList(vo)
+
+Mock:
+	loadEmptyMethod(ANY) :return voList 
+	scmUserContext.getActiveDeptInChargeId() return null 
+	scmUserContext.getPersonInCharge() return u1
+	responsibleOrderDao.getFilteredRecords(ANY, null,ANY,ANY,ANY) return  entityList 
+	responsibleOrderDao.getFilteredRecords(null, ANY,ANY,ANY,ANY) return null
+
+Act:
+	List<ResponsibleOrderInboxVo> listOfNotWaiting = getFilteredRecords(ANY,ANY,typeOfNotWaiting,ANY,ANY,ANY)
+	
+Assert:
+	listOfNotWaiting .size ==1
+
+
+==========================================================
+
+loadProvisionalData()
+
+Arrange:
+	UUID deptInChargeId = UUID.randomUUID();
+	UUID deptNull = null
+	UUID personInChargeId = UUID.randomUUID()
+	UUID personNull =null
+
+	ResponsibleOrderEntity entityPersonNull1
+	entityPersonNull1.userId = "entityPersonNull1"
+	entityPersonNull1.contractClassification = "PROVISIONAL_ORDER"
+	entityPersonNull1.type = "WAITING_FOR_PROVISIONAL_ORDER_COMMITION"
+	entityPersonNull1.elementType = "WAITING_FOR_PROVISIONAL_ORDER_COMMITION"
+    
+	ResponsibleOrderEntity entityPersonNull2
+	entityPersonNull2.userId = "entityPersonNull2"
+    entityPersonNull2.contractClassification = "NOPE"
+	entityPersonNull2.type = "WAITING_FOR_PROVISIONAL_ORDER_COMMITION"
+	entityPersonNull2.elementType = "WAITING_FOR_PROVISIONAL_ORDER_COMMITION"
+	
+    ResponsibleOrderEntity entityPersonNull3
+	entityPersonNull3.userId = "entityPersonNull3"
+    entityPersonNull3.contractClassification = "PROVISIONAL_ORDER"
+	entityPersonNull3.type = "NOPE"
+	entityPersonNull3.elementType = "WAITING_FOR_PROVISIONAL_ORDER_COMMITION"
+
+    ResponsibleOrderEntity entityPersonNull4
+	entityPersonNull4.userId = "entityPersonNull4"
+    entityPersonNull4.contractClassification = "PROVISIONAL_ORDER"
+	entityPersonNull4.type = "WAITING_FOR_PROVISIONAL_ORDER_COMMITION"
+	entityPersonNull4.elementType = "NOPE"
+	
+    List<ResponsibleOrderEntity> entityPersonNullList = Arrays.asList(entityPersonNull1,entityPersonNull2,entityPersonNull3,entityPersonNull4)
+
+	ResponsibleOrderEntity entityDeptNull1
+	entityDeptNull1.userId = "entityDeptNull1"
+    entityDeptNull1.contractClassification = "PROVISIONAL_ORDER"
+	entityDeptNull1.type = "WAITING_FOR_PROVISIONAL_ORDER_COMMITION"
+	entityDeptNull1.elementType = "WAITING_FOR_PROVISIONAL_ORDER_COMMITION"
+	List<ResponsibleOrderEntity> entityDeptNullList = Arrays.asList(entityDeptNull1)
+	
+Mock:
+	responsibleOrderDao.getFilteredRecords(null,ANY,ANY,ANY,ANY) return entityPersonNullList 
+	responsibleOrderDao.getFilteredRecords(ANY,null,ANY,ANY,ANY) return entityDeptNullList 
+Act:
+    List<ResponsibleOrderEntity> personNullList = loadProvisionalData(deptInChargeId,ANY,ANY,personNull) 
+    List<ResponsibleOrderEntity> deptNullList = loadProvisionalData(deptNull,ANY,ANY,personInChargeId) 
+    List<ResponsibleOrderEntity> bothNullList = loadProvisionalData(null,ANY,ANY,null) 
+
+Assert:
+
+    personNullList.size() ==1
+    personNullList[0].userId = "entityPersonNull1"
+    deptNullList.size() ==1
+    deptNullList[0].userId == "entityDeptNull1"
+    bothNullList.size() == 0
+==========================================================
+loadSorting()
+
+//FIXME
+case OrderManagementConstant.ORDER:
+case OrderManagementConstant.CASE:
+will never reach. DELETE this source code. 
+
+Arrange:
+	ZonedDateTime today =  ZonedDateTime.now()
+	ZonedDateTime yesterday =  ZonedDateTime.now().minusDays(1)
+	ResponsibleOrderEntity reqDateToday
+	ResponsibleOrderEntity reqDateYesterday
+	ResponsibleOrderEntity reqDateNull
+	reqDateToday.requestDate = today
+	reqDateYesterday.requestDate = yesterday
+	List<ResponsibleOrderEntity> reqDateList = Arrays.asList{reqDateToday,reqDateYesterday,reqDateNull}
+
+	ResponsibleOrderEntity delivDateToday
+	ResponsibleOrderEntity delivDateYesterday
+	ResponsibleOrderEntity delivDateNull
+	delivDateToday.deliveryDate = today
+	delivDateYesterday.deliveryDate = yesterday
+	List<ResponsibleOrderEntity> delivDateList = Arrays.asList{delivDateToday,delivDateYesterday,delivDateNull}
+
+	ResponsibleOrderEntity orderDateToday
+	ResponsibleOrderEntity orderDateYesterday
+	ResponsibleOrderEntity orderDateNull
+	orderDateToday.orderDate = today
+	orderDateYesterday.orderDate = yesterday
+	List<ResponsibleOrderEntity> orderDateList = Arrays.asList{orderDateToday,orderDateYesterday,orderDateNull}
+Mock:
+
+Act:
+	List<ResponsibleOrderEntity> emptyList=loadSorting(ANY,"hoge",ANY)
+	
+	List<ResponsibleOrderEntity> reqDateListAsc = loadSorting(reqDateList,"request","ascending")
+	List<ResponsibleOrderEntity> reqDateListDesc = loadSorting(reqDateList,"request","descending")
+
+	List<ResponsibleOrderEntity> delivDateListAsc = loadSorting(delivDateList,"delivery","ascending")
+	List<ResponsibleOrderEntity> delivDateListDesc = loadSorting(delivDateList,"delivery","descending")
+	
+	List<ResponsibleOrderEntity> orderDateListAsc = loadSorting(orderDateList,"application","ascending")
+	List<ResponsibleOrderEntity> orderDateListDesc = loadSorting(orderDateList,"application","descending")
+Assert:
+	emptyList.size() == 0
+	reqDateListAsc[0].requestDate == ""
+	reqDateListAsc[1].requestDate == yesterday
+	reqDateListAsc[2].requestDate == today
+	reqDateListDesc[0].requestDate == today
+	reqDateListDesc[1].requestDate == yesterday
+	reqDateListDesc[2].requestDate == ""
+
+	delivDateListAsc[0].deliveryDate == ""
+	delivDateListAsc[1].deliveryDate == yesterday
+	delivDateListAsc[2].deliveryDate == today
+	delivDateListDesc[0].deliveryDate == today
+	delivDateListDesc[1].deliveryDate == yesterday
+	delivDateListDesc[2].deliveryDate == ""
+
+	orderDateListAsc[0].orderDate == ""
+	orderDateListAsc[1].orderDate == yesterday
+	orderDateListAsc[2].orderDate == today
+	orderDateListDesc[0].orderDate == today
+	orderDateListDesc[1].orderDate == yesterday
+	orderDateListDesc[2].orderDate == ""
+
+==========================================================
+setWaitingForDeliveryData()
+
+Arrange:
+	ResponsibleOrderInboxVo vo1
+	ResponsibleOrderInboxVo vo2
+	ResponsibleOrderInboxVo vo3
+	ResponsibleOrderInboxVo vo4
+	ResponsibleOrderInboxVo vo5
+	ResponsibleOrderInboxVo vo6
+	List<ResponsibleOrderInboxVo> zeroVosList
+	List<ResponsibleOrderInboxVo> threeVosList = Arrays.asList(vo1,vo2,vo3)
+	List<ResponsibleOrderInboxVo> sixVosList = Arrays.asList(vo1,vo2,vo3,vo4,vo5,vo6)
+	WapStatsLabelVo wapHeaderLabelVo 
+Mock:
+	setHeaderLabelAndCount(ANY) :return wapHeaderLabelVo
+Act:
+	threeVosMap = setWaitingForDeliveryData(threeVosList)
+	fiveVosMap = setWaitingForDeliveryData(sixVosList)
+Assert:
+	zeroVosList.get("orderWaitDeliveryInboxList").size() == 0
+	zeroVosList.get("seeMoreAnchorLabel").display == "hidden"
+	threeVosMap.get("seeMoreAnchorLabel").display == ""
+	threeVosMap.get("orderWaitDeliveryInboxList").size() == 3
+	threeVosMap.get("seeMoreAnchorLabel").display == ""
+	fiveVosMap.get("orderWaitDeliveryInboxList").size() == 5
+	fiveVosMap.get("seeMoreAnchorLabel").display == "hidden"
+
+
+==========================================================
+setHeaderLabelAndCount()
+Arrange:
+	ResponsibleOrderInboxVo vo1
+	ResponsibleOrderInboxVo vo2
+	List<ResponsibleOrderInboxVo> list = Arrays.asList(vo1,vo2)
+	WapStatsLabelVo resultVo
+
+Mock:
+	setHeaderLabel(ANY);
+Act:
+	setHeaderLabelAndCount(list)
+Assert:
+	// Note: Use ArgumentCaptor
+
+	verify(OrderManagementService, times(1)).setHeaderLabel(captor1,captor2,captor3);
+	captor2.getValue() == list.size().toString()
+
+==========================================================
+setHeaderLabel(List<ResponsibleOrderEntity> dataEntityList, String dataValue, String modeValue)
+//FIXME parameter of List<ResponsibleOrderInboxVo> is not used. DELETE this parameter.
+
+Arrange:
+	String inboxCountString = "2"
+	String countStatus = "PC.POMT.provisionalPensingStatus"
+	String other = "hoge"
+Mock:
+    textResourceManager.getTextWithParam("PC.POMT.provisionalPensingStatus") : return "TrueCase"
+	textResourceManager.getTextWithParam("hoge") : return "FalseCase"
+	textResourceManager.getTextWithParam("PC.POMT.recordCounts") : return "TrueCase"
+Act:
+	WapStatsLabelVo voTrue = setHeaderLabel(inboxCountString,countStatus)
+	WapStatsLabelVo voFalse = setHeaderLabel(inboxCountString,other)
+
+Assert:
+	voTrue.label == "TrueCase"
+	voTrue.value == "wap-stats-label-value-2"
+	voTrue.countAnimation == ""
+	voTrue.unit == "TrueCase"
+
+	voFalse.label == "FalseCase"
+	voFalse.value == "wap-stats-label-value-2"
+	voFalse.countAnimation == ""
+
+==========================================================
+loadProcurementList()
+
+Arrange:
+	ResponsibleOrderInboxVo vo1
+	ResponsibleOrderInboxVo vo2
+	ResponsibleOrderInboxVo vo3
+	vo1.status ="PROC.POMT.quoting"
+	vo2.status ="PROC.POMT.quoting"
+	List<ResponsibleOrderInboxVo> voList
+	List<ResponsibleOrderInboxVo> filteredList
+	
+Mock:
+	getFilteredRecords(ANY) :Return voList
+Act:
+	Map<String,Object> resultMap= loadProcurementList(ANY)
+Assert:
+	// Note: Use ArgumentCaptor
+	resultMap.get("data") == filteredList
+	verify(OrderManagementService, times(1)).loadProcurementList(captor1,captor2,captor3);
+	List<ResponsibleOrderInboxVo> resultList = captor1.getValue()
+	resultList.size() == "2"
+
+==========================================================
+setProcurementData()
+//FIXME dataValue,iteratorValue,modeValue is not used. Please Delete.
+
+Arrange:
+	ResponsibleOrderInboxVo vo 
+	vo.userId = "hoge"
+	List<ResponsibleOrderInboxVo> voList = Arrays.asList(vo)ResponsibleOrderInboxVo
+	WapStatsLabelVo procurementStatLabelVo
+	procurementStatLabelVo.label ="hoge"
+Mock:
+	renderStatusLabel(ANY) return voList
+	setHeaderLabelAndCount(ANY) return procurementStatLabelVo
+Act:
+	Map<String, Object> procuremntReturnMap = setProcurementData(ANY)
+Assert:
+	procuremntReturnMap.get("searchStatsLabel").getLabel == "hoge"
+	procuremntReturnMap.get("")[0].getUserId() == "hoge"
+
+==========================================================
+renderStatusLabel()
+// FIXME Predicate<ResponsibleOrderInboxVo> pred is not used. delete it.
+
+Arrange:
+	ResponsibleOrderInboxVo vo1,vo2,vo3,voHoge
+	vo1.status = "PC.POMT.modificationRemanded"
+	vo2.status = "scm.pr.order.estimating.orderwaiting.info"
+	vo3.status = "PC.POMT.canceled"
+	voHoge.status = "hoge"
+	List<ResponsibleOrderInboxVo> vos = Arrays.asList(vo1,vo2,vo3,vo4,voHoge)
+Mock:
+	textResourceManager.getText(vo1.status) :Return "vo1"
+	textResourceManager.getText(vo2.status) :Return "vo2"
+	textResourceManager.getText(vo3.status) :Return "vo3"
+Act:
+	List<ResponsibleOrderInboxVo> reslutVo = renderStatusLabel(voList)
+Assert:
+	resultVo.size() == 3
+	
+	reslutVo[0].value == "vo1"
+	reslutVo[0].borderRadius == wap-inbox-tag-renderer-radius
+	reslutVo[0].status.colorType == "wap-inbox-tag-renderer-danger"
+	
+	reslutVo[1].value == "vo2"
+	reslutVo[1].borderRadius == wap-inbox-tag-renderer-radius
+	reslutVo[1].status.colorType == "wap-inbox-tag-renderer-warning"
+	
+	reslutVo[2].value == "vo3"
+	reslutVo[2].borderRadius == wap-inbox-tag-renderer-radius
+	reslutVo[2].status.colorType == "wap-inbox-tag-renderer-success"
+
+==========================================================
+loadApplyOrderList(UserSegmentEnum userSegment, String dataValue, String modeValue)
+
+Arrange:
+	String dataOne = "1"
+	String dataEmpty = ""
+	ResponsibleOrderInboxVo vo1,vo2
+	vo1.status = "PC.POMT.temporarilySaved"
+	List<ResponsibleOrderInboxVo> voList = Arrays.asList(vo1,vo2)
+	List<ResponsibleOrderInboxVo> voListExpectEmpty = Arrays.asList(vo2)
+	Map<String, Object> emptyMap 
+	Map<String, Object> oneMap
+	oneMap.put("key", "one")
+Mock:
+	getFilteredRecords(ANY,ANY,ANY,ANY,dataOne,ANY) :Return voList
+	getFilteredRecords(ANY,ANY,ANY,ANY,dataEmpty,ANY) :Return voListExpectEmpty
+	setRemandData(ANY) :Return emptyMap
+	setDraftData(ANY) : Return oneMap
+	setApplyingData(ANY) :Return emptyMap
+	
+Act:
+	Map<String, Object> oneResultMap = loadApplyOrderList(ANY,dataOne,ANY)
+	Map<String, Object> emptyResultMap = loadApplyOrderList(ANY,dataEmpty,ANY)
+Assert:
+	oneResultMap.get("key") =="one"
+	emptyResultMap.size() == 0
+
+==========================================================
+setRemandData(List<ResponsibleOrderInboxVo> remandedDataEntityList, String dataValue,String modeValue)
+// FIXME String dataValue,modeValue is unused. DELETE.
+
+Arrange:
+	ResponsibleOrderInboxVo inboxVo
+	inboxVo.userId = "test"
+	List<ResponsibleOrderInboxVo> voList
+	WapStatsLabelVo labelVo
+	labelVo.label="label"
+Mock:
+	checkOrderRemandedStatus(ANY) :Return voList
+	setHeaderLabelAndCount(ANY) :Return labelVo
+	
+Act:
+	Map<String, Object> resultMap = setRemandData(voList)
+Assert:
+	resultMap.get("orderRemandInboxData")[0].userId =="test"
+	resultMap.get("remandStatsLabel").label =="label"
+
+==========================================================
+checkOrderRemandedStatus(List<ResponsibleOrderInboxVo> responsibleOrderEntityList)
+//FIXME DELETE this method. You can call renderStatusLabel() directly.
+
+==========================================================
+setDraftData(List<ResponsibleOrderInboxVo> draftDataEntityList, UserSegmentEnum userSegment, String modeValue)
+//FIXME String modeValue is not used . DELETE.
+
+Arrange:
+	OrderManagementPortalEntity entity
+	List<OrderManagementPortalEntity> entityList
+
+Mock:
+	loadTitle(ANY) :Return List<String>
+	textResourceManager.getTextWithParam(ANY) :Return "test"
+	setHeaderLabelAndCount(ANY) return ""
+
+Act:
+	resultMap =  setDraftData(entityList)
+Assert:
+	resultMap.get("orderTemporarySaveInboxListData")[0].iconType.iconType =="wap-icon-pencil"
+	resultMap.get("orderTemporarySaveInboxListData")[0].statusType =="test"
+
+==========================================================
+loadTitle(String userId, UserSegmentEnum userSegment, String typeOne, long corpId)
+
+Arrange:
+	ResponsibleOrderEntity entLargeCase
+	entLargeCase.type = "TEMPORARY_SAVE"
+	entLargeCase.title = "large"
+	
+	ResponsibleOrderEntity entSmallCase
+	entSmallCase.title = "small"
+	entSmallCase.type = "temporary_save"
+	
+	ResponsibleOrderEntity entity
+	entSmallCase.title = "entity"
+	entSmallCase.type = "hoge"
+	
+	List<ResponsibleOrderEntity> list = Arrays.asList(entLargeCase,entSmallCase,entity)
+
+Mock:
+	responsibleOrderDao.getFilteredRecords(ANY) :Return list
+Act:
+	List<String> resultList = loadTitle(ANY)
+Assert:
+	resultList.size() == 2
+	resultList[0] =="large"
+	resultList[1] =="small"
+	
+
+==========================================================
+setApplyingData(List<ResponsibleOrderInboxVo> inboxGroupList, String dataValue, String modeValue)
+
+Arrange:
+	ResponsibleOrderInboxVo vo1,vo2,vo3,vo4,vo5,vo6
+	List<ResponsibleOrderInboxVo> paramListThree = Arrays.asList(vo1,vo2,vo3)
+	List<ResponsibleOrderInboxVo> sortedListThree = Arrays.asList(vo1,vo2,vo3)
+	List<ResponsibleOrderInboxVo> paramListSix = Arrays.asList(vo1,vo2,vo3,vo4,vo5,vo6)
+	List<ResponsibleOrderInboxVo> sortedListSix = Arrays.asList(vo1,vo2,vo3,vo4,vo5,vo6)
+	WapStatsLabelVo label
+	label.label = "label"
+Mock:
+	setHeaderLabelAndCount(ANY) :Return label
+	renderStatusLabel(paramListThree): return sortedListThree
+	renderStatusLabel(paramListSix): return sortedListSix
+Act:
+	Map<String, Object> resultMapFive = setApplyingData(paramListThree)
+	Map<String, Object> resultMapThree = setApplyingData(paramListSix)
+Assert:
+	resultMapFive.get("applyingStatsLabel").label =="label" 
+	
+	resultMapFive.get("seeMoreAnchorLabel").display==""
+	resultMapThree.get("seeMoreAnchorLabel").display=="hidden"
+
+	resultMapFive.get("orderApplyingInboxListData").size()== 5
+	resultMapThree.get("orderApplyingInboxListData").size()== 3
+
+
+==========================================================
+loadPendingOrderList()
+
+Arrange:
+	ResponsibleOrderInboxVo vo
+	List<ResponsibleOrderInboxVo> voList
+	Map<String, Object> map
+	map.put("test","testValue")
+Mock:
+	getFilteredRecords(ANY) :Return voList
+	setPendingOrderData(voList): Return 
+Act:
+	Map<String, Object> resultMap = loadPendingOrderList(ANY)
+Assert:
+	resultMap.get("test") == "testValue"
+
+
+==========================================================
+setPendingOrderData(List<ResponsibleOrderInboxVo> inboxGroupList)
+
+Arrange:
+	ResponsibleOrderInboxVo vo1,vo2,vo3,vo4,vo5,vo6
+	List<ResponsibleOrderInboxVo> listThree = Arrays.asList(vo1,vo2,vo3)
+	List<ResponsibleOrderInboxVo> listSix = Arrays.asList(vo1,vo2,vo3,vo4,vo5,vo6)
+	WapStatsLabelVo wapHeaderLabelVo 
+Mock:
+	setHeaderLabelAndCount(ANY) : Retrun wapHeaderLabelVo
+
+Act:
+	Map<String, Object> resultMapThree = setPendingOrderData(listThree)
+	Map<String, Object> resultMapFive = setPendingOrderData(listSix)
+Assert:
+	resultMapThree.get("orderPendingInboxList").size() == 3
+	resultMapFive.get("orderPendingInboxList").size() == 5
+
+	resultMapThree.get("seeMoreAnchorLabel").display =="hidden"
+	resultMapFive.get("seeMoreAnchorLabel").display =="" 
+	
+
+==========================================================
+loadWaitForIssuanceList(UserSegmentEnum userSegment) 
+Arrange:
+	ResponsibleOrderInboxVo vo
+	List<ResponsibleOrderInboxVo> voList
+	Map<String, Object> map
+	map.put("test","testValue")
+Mock:
+	getFilteredRecords(ANY) :Return voList
+	setPendingOrderData(voList): Return map
+Act:
+	Map<String, Object> resultMap = loadPendingOrderList(ANY)
+Assert:
+	resultMap.get("test") == "testValue"
+==========================================================
+setWaitForIssuanceData(List<ResponsibleOrderInboxVo> responsibleOrderEntityList) 
+
+Arrange:
+	ResponsibleOrderInboxVo vo1,vo2,vo3,vo4,vo5,vo6
+	List<ResponsibleOrderInboxVo> listThree = Arrays.asList(vo1,vo2,vo3)
+	List<ResponsibleOrderInboxVo> listSix = Arrays.asList(vo1,vo2,vo3,vo4,vo5,vo6)
+	WapStatsLabelVo wapHeaderLabelVo 
+Mock:
+	setHeaderLabelAndCount(ANY) : Retrun wapHeaderLabelVo
+
+Act:
+	Map<String, Object> resultMapThree = setPendingOrderData(listThree)
+	Map<String, Object> resultMapFive = setPendingOrderData(listSix)
+Assert:
+	resultMapThree.get("waitIssuanceInboxList").size() == 3
+	resultMapFive.get("waitIssuanceInboxList").size() == 5
+
+	resultMapThree.get("seeMoreAnchorLabel").display =="hidden"
+	resultMapFive.get("seeMoreAnchorLabel").display =="" 
+	
+
+==========================================================
+loadPendingProvisionalOrderList(UserSegmentEnum userSegment) 
+Arrange:
+	ResponsibleOrderInboxVo vo
+	List<ResponsibleOrderInboxVo> voList
+	Map<String, Object> map
+	map.put("test","testValue")
+Mock:
+	getFilteredRecords(ANY) :Return voList
+	setPendingOrderData(voList): Return 
+Act:
+	Map<String, Object> resultMap = loadPendingOrderList(ANY)
+Assert:
+	resultMap.get("test") == "testValue"
+==========================================================
+setPendingProvisionalOrderData(List<ResponsibleOrderInboxVo> inboxGroupList) 
+Arrange:
+	ResponsibleOrderInboxVo vo1,vo2,vo3,vo4,vo5,vo6
+	List<ResponsibleOrderInboxVo> listThree = Arrays.asList(vo1,vo2,vo3)
+	List<ResponsibleOrderInboxVo> listSix = Arrays.asList(vo1,vo2,vo3,vo4,vo5,vo6)
+	WapStatsLabelVo wapHeaderLabelVo 
+Mock:
+	setHeaderLabelAndCount(ANY) : Retrun wapHeaderLabelVo
+
+Act:
+	Map<String, Object> resultMapThree = setPendingOrderData(listThree)
+	Map<String, Object> resultMapFive = setPendingOrderData(listSix)
+
+Assert:
+	resultMapThree.get("orderPendingInboxList").size() == 3
+	resultMapFive.get("orderPendingInboxList").size() == 5
+
+	resultMapThree.get("seeMoreAnchorLabel").display =="hidden"
+	resultMapFive.get("seeMoreAnchorLabel").display =="" 
+
+==========================================================
+loadBarcodeRecords(List<String> orderBarcodeList) 
+Arrange:
+	String barcode1 = "12345-6789"	
+	List<String> barcodeList = Arrays.asList(barcode) 
+	OrderHeaderEntity entity
+	entity.orderTitle = "test"
+Mock:
+	orderHeaderDao.getSingleByOrderNumber("12345") :Return entity
+Act:
+	loadBarcodeRecords(barcodeList)
+Assert:
+// Note: Use ArgumentCaptor
+	verify(OrderManagementService, times(1)).loadBarcodeInboxList(captor1,captor2,captor3);
+	captor1.getValue().orderTitle == "test"
+	captor2.getValue() == "6789"
+	
+==========================================================
+loadBarcodeInboxList(OrderHeaderEntity orderHeaderEntity, int revisionNumber, List<Map<String, Object>> collectiveOrderList)
+//FIXME This method does 2 things. 1.Create returnMap, and 2.Create collectiveOrderList. Divide this 2 methods.
+// 1.Create returnMap -> ValidateBarcode() 2.Create collectiveOrderList -> loadBarcodeInboxList()
+
+Arrange:
+
+Mock:
+
+Act:
+
+Assert:
+
+==========================================================
+fetchBarcodeRecords(OrderHeaderEntity orderHeaderEntity)
+//FIXME orderDashboardOnGoingDao.getAllFilteredData(orderHeaderEntity.getOrderId()).get(0); 
+// This source code is BAD. FIX [if(List.size()==0) return emptyList; ]
+
+Arrange:
+	OrderHeaderEntity entity,entityNull
+	UUID id1 = UUID.randomUUID
+	UUID idNull = UUID.randomUUID
+	entity.orderId = id1
+	entityNull.orderId = idNull
+	OrderDashboardOngoingEntity onGoingEnt
+	onGoingEnt.orderId = id1
+	List<onGoingEnt> onGoingList = Arrays.asList(onGoingEnt)
+	List<onGoingEnt> onGoingListEmpty
+	Map<String, Object> dataValuesMap
+	dataValuesMap.put("test","value")
+Mock:
+	orderDashboardOnGoingDao.getAllFilteredData(id1) :Return onGoingList
+	orderDashboardOnGoingDao.getAllFilteredData(idNull) :Return onGoingListEmpty
+	setBarcodeRecords(ANY) :Return dataValuesMap
+Act:
+	List<Map<String, Object>> resultMap=fetchBarcodeRecords(entity)
+	List<Map<String, Object>> resultMapEmpty fetchBarcodeRecords(entityNull)
+Assert:
+	resultMap.size() ==1
+	resultMapEmpty.size() ==0
+==========================================================
+setBarcodeRecords(OrderHeaderEntity orderHeaderEntity, OrderDashboardOngoingEntity orderDashboardOngoingEntity)
+Arrange:
+	UUID id = UUID.randomUUID
+	OrderHeaderEntity emptyHead ,head
+	OrderDashboardOngoingEntity emptyOnGoing,onGoing
+	head.orderTitle ="title"
+	head.orderId = id
+	head.orderNo = "orderNo"
+	head.revisionNumber = 123
+	head.serviceId = "serviceId"
+	head.orderNo = "number"
+	head.supplierName = MLString("supplier","EN")
+	head.orderPersonInChargeName = MLString("user","EN")
+	head.orderConfirmationDate = ZonedDateTime.of(2019, 3, 6, 10, 20,30, 999, ZoneId.of("Asia/Tokyo"))
+
+	onGoing.isPersonal = 1
+	onGoing.rowType = "type"
+	
+Mock:
+
+Act:
+	Map<String, Object> emptyMap = setBarcodeRecords(emptyHead,emptyOnGoing)
+	Map<String, Object> resultMap = setBarcodeRecords(head,onGoing)
+	
+Assert:
+	emptyMap.get("orderSubject") ==null
+	emptyMap.get("orderId") ==null
+	emptyMap.get("orderNo") ==null
+	emptyMap.get("swServiceId") ==null
+	emptyMap.get("orderNumber") ==null
+	emptyMap.get("supplierName") ==null
+	emptyMap.get("userId") ==null
+	emptyMap.get("personalDiv") ==null
+	emptyMap.get("type") ==null
+	emptyMap.get("orderConfirmationDate")==null
+	emptyMap.get("confirmationDate")==null
+
+	resultMap.get("orderSubject") =="title"
+	resultMap.get("orderId") ==id
+	resultMap.get("orderNo") =="orderNo-123"
+	resultMap.get("swServiceId") =="serviceId"
+	resultMap.get("orderNumber") =="orderNo"
+	resultMap.get("supplierName") =="supplier"
+	resultMap.get("userId") =="user"
+	resultMap.get("personalDiv") ==1
+	resultMap.get("type") =="type"
+	resultMap.get("orderConfirmationDate")=="Wed, Mar 6"
+	resultMap.get("confirmationDate")=="2019-03-06T10:20:30.000000999+09:00[Asia/Tokyo]"
+
+==========================================================
+doIndexProceedingsListEmpty()
+// FIXME change method name getDashboardViewMap()
+
+Arrange:
+	OrderManagementPortalEntity entity
+	List<OrderManagementPortalEntity> emptyPortal1,portal
+	portal.add(enity)
+	List<OrderManagementDashboardEntity> emptyDash
+Mock:
+	loadProceedingsList(ANY) :Return emptyPortal
+	loadPortalConfirmList(ANY):Return emptyDash
+	
+Act:
+	Map<StringObject> resultMap = getDashboardViewMap() 
+Assert:
+	resultMap.get("showData").display ==""
+	resultMap.get("messageEmptyData").display==""
+	resultMap.get("toConfirmedHeaderLabel").display =="display-none"
+	resultMap.get("processHeaderLabel").display =="display-none"
+==========================================================
+doIndexConfirmedListEmpty()
+Arrange:
+	OrderManagementPortalEntity entity
+	List<OrderManagementPortalEntity> emptyPortal1,portal
+	portal.add(enity)
+	List<OrderManagementDashboardEntity> emptyDash
+Mock:
+	loadProceedingsList(ANY) :Return portal
+	loadPortalConfirmList(ANY):Return emptyDash
+Act:
+	Map<StringObject> resultMap = getDashboardViewMap() 
+Assert:
+	resultMap.get("showData") == null
+	resultMap.get("messageEmptyData") == null
+	resultMap.get("toConfirmedHeaderLabel").display =="display-none"
+	resultMap.get("processHeaderLabel") ==null
+==========================================================
+loadProceedingsList(String userId, Long corpId, UUID deptInChargeId, UUID personInChargeId)
+// FIXME Delete userId which is not used. 
+// FIXME Not to useDirectly  orderManagementDetailEntityList.addAll(responsibleOrderDao.getFilteredRecords())   
+// But Use          List<ResponsibleOrderEntity> orderPlanEntityList = responsibleOrderDao.getFilteredRecords()
+//                  orderManagementDetailEntityList.addAll(orderPlanEntityList)
+
+Arrange:
+	UUID deptInChargeId = UUID.randomUUID
+	UUID personInChargeId = UUID.randomUUID
+	OrderManagementPortalEntity entity1,entity2,entity3,entity4,entity5,entityEmpty
+	entity1.type = "PROCUREMENT_REQUEST"
+	entity1.rowDatas = "1"
+	entity2.type = "ON_ORDER"
+	entity2.rowDatas = "2"
+	entity3.type = "WAITING_FOR_ORDER_SHEET_PRINTING"
+	entity3.rowDatas = "3"
+	entity4.type = "WAITING_FOR_ORDER_CONFIRMATION"
+	entity4.rowDatas = "4"
+	entity5.type = "WAITING_FOR_ATP_ANSWER"
+	entity5.rowDatas = "5"
+
+	List<OrderManagementPortalEntity> list = Arrays.asList(entity1,entity2,entity3,entity4,entity5,entityEmpty)
+	List<OrderManagementPortalEntity> emptyList 
+Mock:
+	responsibleOrderDao.getAllByDeptInCharge(deptInChargeId,ANY,ANY) :Return list
+	responsibleOrderDao.getAllByDeptInCharge(null,personInChargeId,ANY) :Return list
+	responsibleOrderDao.getFilteredRecords(ANY) : Return emptyList
+	loadProvisionalData(ANY).size() return 1
+	buildProcurementMessage(getCountByOrderStatus(ANY,"PROCUREMENT_REQUEST")) : Return entity1
+	buildProcurementMessage(getCountByOrderStatus(ANY,"ON_ORDER")) : Return entity2
+	buildProcurementMessage(getCountByOrderStatus(ANY,"WAITING_FOR_ORDER_SHEET_PRINTING")) : Return entity3
+	buildProcurementMessage(getCountByOrderStatus(ANY,"WAITING_FOR_ORDER_CONFIRMATION")) : Return entity4
+	buildProcurementMessage(getCountByOrderStatus(ANY,"WAITING_FOR_ATP_ANSWER")) : Return entity5
+	buildPendingProvisionOrderMessage(1) : Return entityEmpty
+Act:
+	List<OrderManagementPortalEntity> emptyResultList = loadProceedingsList(null,null,null)
+	List<OrderManagementPortalEntity> resultList = loadProceedingsList(ANY,deptInChargeId,personInChargeId)
+Assert:
+	emptyResultList.size() == 0
+	resultList.size() ==6
+	resultList[0].rowDatas == "1"
+	resultList[1].rowDatas == "2"
+	resultList[2].rowDatas == "3"
+	resultList[3].rowDatas == "4"
+	resultList[4].rowDatas == "5"
+	resultList[5].rowDatas == null
+
+==========================================================
+getCountByOrderStatus(Map<String, List<ResponsibleOrderEntity>> rowTypeOrderedMap, String rowType)
+//FIXME Modify this code to use stream
+		if (OrderManagementConstant.WAITING_FOR_ORDERSHEET_PRINTING.equals(rowType)) {
+            Map<String, Integer> orderSheetCountMap = new HashMap<>();
+            orderSheetCountMap.put(rowType, rowTypeOrderedMap.get(rowType).size());
+            return orderSheetCountMap;
+        }
+
+Arrange:
+	ResponsibleOrderEntity entityStart,entityEnd
+	entityStart.orderStatus = "start"
+	entityEnd.orderStatus = "end"
+	List<ResponsibleOrderEntity> list = Arrays.asList(entityStart,entityEnd)
+	Map<String, List<ResponsibleOrderEntity>> map
+	map.put("WAITING_FOR_ORDER_SHEET_PRINTING",list)
+	map.put("hoge",list)
+Mock:
+Act:
+	Map<String, Integer> waitPrintMap = getCountByOrderStatus(map,"WAITING_FOR_ORDER_SHEET_PRINTING")
+	Map<String, Integer> hogeMap =getCountByOrderStatus(map,"hoge")
+Assert:
+	waitPrintMap.get("WAITING_FOR_ORDER_SHEET_PRINTING")==2
+	hogeMap.get("start") ==1
+	hogeMap.get("end") == 1
+
+==========================================================
+buildProcurementMessage(Map<String, Integer> groupMap)
+
+Arrange:
+	Map<String, Integer> groupMap 
+	groupMap.put("scm.pr.order.estimating.orderwaiting.info",1)
+	groupMap.putPC.POMT.pre_order_on_waiting_for_modification2",2)
+	Map<String, Integer> groupZeroMap 
+	groupMap.put("scm.pr.order.estimating.orderwaiting.info",0)
+	groupMap.put("PC.POMT.pre_order_on_waiting_for_modification",0)
+Mock:
+	textResourceManager.getTextWithParam("PC.POMT.ProcurementRequest") :Return "test"
+	textResourceManager.getTextWithParam("PC.POMT.procurementRequestMessage",ANY,ANY) :Return "procurementRequestMessage"
+	textResourceManager.getTextWithParam("PC.POMT.procurementsingleheader",ANY,ANY) :Return "procurementsingleheader"
+Act:
+	OrderManagementPortalEntity entity = buildProcurementMessage(groupMap)
+	OrderManagementPortalEntity entityZero = buildProcurementMessage(groupZeroMap)
+
+Assert:
+	entity.iconType =="wap-icon-cart" 
+	entity.statusType == "test"
+	entity.rowDatas =="procurementRequestMessage"
+	entity.count == "PROCUREMENT_REQUEST"
+	entityZero.rowDatas =="procurementsingleheader"
+
+==========================================================
+buildApplyOrderMessage(Map<String, Integer> groupMap)
+	
+Arrange:
+	Map<String, Integer> groupMap
+	groupMap.put("scm.pr.order.remanded.orderingremanded.info",3)
+	groupMap.put("PC.POMT.cancelRemanded",5)
+	groupMap.put("PC.POMT.modificationRemanded",7)
+	groupMap.put("PC.POMT.temporarilySaved",11)
+
+	Map<String, Integer> groupZeroMap
+	groupZeroMap.put("scm.pr.order.remanded.orderingremanded.info",0)
+	groupZeroMap.put("PC.POMT.cancelRemanded",0)
+	groupZeroMap.put("PC.POMT.modificationRemanded",0)
+	groupZeroMap.put("PC.POMT.temporarilySaved",0)
+	
+Mock:
+	textResourceManager.getTextWithParam("PC.POMT.applyingForOrder") :Return "test"
+	textResourceManager.getTextWithParam("PC.POMT.applyMultipleMessage",ANY,ANY) :Return "applyMultipleMessage"
+	textResourceManager.getTextWithParam("PC.POMT.applyingSinglemessage",ANY,ANY) :Return "applyingSinglemessage"
+	
+Act:
+	OrderManagementPortalEntity  entity = buildApplyOrderMessage(groupMap)
+	OrderManagementPortalEntity  zeroEntity = buildApplyOrderMessage(groupZeroMap)
+Assert:
+	entity.iconType == "wap-icon-file"
+	entity.statusType == "test"
+	entity.rowDatas == "applyMultipleMessage"
+	entity.count == "APPLYING_ORDER"
+	entityZero.rowDatas == "applyingSinglemessage"
+
+==========================================================
+buildWaitIssuanceMessage(Map<String, Integer> groupMap) 
+
+Arrange:
+	Map<String, Integer> groupMap
+	groupMap.put("scm.pr.order.neworder.waitingacceptance.info",3)
+	Map<String, Integer> groupZeroMap
+	groupZeroMap.put("scm.pr.order.neworder.waitingacceptance.info",0)
+	
+Mock:
+	textResourceManager.getTextWithParam("PC.POMT.waitForIssuanceOrder") :Return "test"
+	textResourceManager.getTextWithParam("PC.POMT.waitForMessage",ANY,ANY) :Return "waitForMessage"
+	textResourceManager.getTextWithParam("PC.POMT.waitsinglemessage",ANY,ANY) :Return "waitsinglemessage"
+	
+Act:
+	OrderManagementPortalEntity  entity = buildWaitIssuanceMessage(groupMap)
+	OrderManagementPortalEntity  zeroEntity = buildWaitIssuanceMessage(groupZeroMap)
+Assert:
+	entity.iconType == "wap-icon-print"
+	entity.statusType == "test"
+	entity.rowDatas == "waitForMessage"
+	entity.count == "ISSUANCE_OF_ORDER"
+	entityZero.rowDatas == "waitsinglemessage"
+
+
+==========================================================
+buildPendingOrderMessage(Map<String, Integer> groupMap, Map<String, List<ResponsibleOrderEntity>> listByRowTypeMap)
+
+Arrange:
+	Map<String, Integer> groupMap
+	groupMap.put("scm.pr.order.neworder.waitingacceptance.info",3)
+	Map<String, Integer> groupZeroMap
+	groupZeroMap.put("scm.pr.order.neworder.waitingacceptance.info",0)
+	
+Mock:
+	textResourceManager.getTextWithParam("PC.POMT.pendingOrdersPending") :Return "test"
+	textResourceManager.getTextWithParam("PC.POMT.pendingListMessage",ANY,ANY) :Return "pendingListMessage"
+	textResourceManager.getTextWithParam("PC.POMT.pendingOrder",ANY,ANY) :Return "pendingOrder"
+	getDelayResponseCountforPendingOrderMessage(ANY) : Return 1
+Act:
+	OrderManagementPortalEntity  entity = buildPendingOrderMessage(groupMap, ANY)
+	OrderManagementPortalEntity  zeroEntity = buildPendingOrderMessage(groupZeroMap, ANY)
+Assert:
+	entity.iconType == "wap-icon-task-check"
+	entity.statusType == "test"
+	entity.rowDatas == "pendingListMessage"
+	entity.count == "PENDING_ORDER"
+	entityZero.rowDatas == "pendingOrder"
+
+==========================================================
+buildWaitingForDeliveryMessage(Map<String, Integer> groupMap, Map<String, List<ResponsibleOrderEntity>> listByRowTypeMap) 
+
+Arrange:
+	Map<String, Integer> groupMap
+	groupMap.put("PC.POMT.waitDelivery",3)
+	Map<String, Integer> groupZeroMap
+	groupZeroMap.put("PC.POMT.waitDelivery",0)
+	
+Mock:
+	textResourceManager.getTextWithParam("PC.POMT.waitForDelivery") :Return "test"
+	textResourceManager.getTextWithParam("PC.POMT.waitingMessageInfo",ANY,ANY) :Return "waitingMessageInfo"
+	textResourceManager.getTextWithParam("PC.POMT.waitingSingleMessage",ANY,ANY) :Return "waitingSingleMessage"
+	getDelayedCountForWaitingForDeliveryMessage(ANY) : Return 1
+Act:
+	OrderManagementPortalEntity  entity = buildWaitingForDeliveryMessage(groupMap, ANY)
+	OrderManagementPortalEntity  zeroEntity = buildWaitingForDeliveryMessage(groupZeroMap, ANY)
+Assert:
+	entity.iconType == "wap-icon-calendar"
+	entity.statusType == "test"
+	entity.rowDatas == "waitingMessageInfo"
+	entity.count == "WAITING_FOR_DELIVERY"
+	entityZero.rowDatas == "waitingSingleMessage"
+
+==========================================================
+buildPendingProvisionOrderMessage(int orderProvisionalInputCount)
+
+Arrange:
+
+Mock:
+	textResourceManager.getTextWithParam("PC.POMT.waitForDelivery") :Return "test"
+	textResourceManager.getTextWithParam("PC.POMT.pendingProvisionalMessage", ANY) :Return "test"
+Act:
+	OrderManagementPortalEntity  entity = buildPendingProvisionOrderMessage(1)
+Assert:
+	entity.iconType == "wap-icon-file"
+	entity.statusType == "test"
+	entity.rowDatas == "waitingMessageInfo"
+	entity.count == "PENDING_PROVISIONAL_ORDER"
+
+==========================================================
+getDelayResponseCountforPendingOrderMessage(Map<String, List<ResponsibleOrderEntity>> listByRowTypeMap)
+
+Arrange:
+	ResponsibleOrderEntity entity entity2
+	ZonedDateTime yesterday = ZonedDateTime.now().minusDays(1)
+	ZonedDateTime tomorrow = ZonedDateTime.now().plusDays(1)
+	entity.desiredDeliveryDate =  yesterday
+	entity2.desiredDeliveryDate - tomorrow
+	List<ResponsibleOrderEntity> list = Arrays.asList(entity,entity2)
+	Map<String,List<ResponsibleOrderEntity>> map
+	map.put("WAITING_FOR_ORDER_CONFIRMATION", list)
+
+Mock:
+
+Act:
+	result = getDelayResponseCountforPendingOrderMessage(map)
+Assert:
+	result == 1
+
+==========================================================
+getDelayedCountForWaitingForDeliveryMessage(Map<String, List<ResponsibleOrderEntity>> listByRowTypeMap)
+
+// FIXME Don't write long code in "foreach".  Use "for" instead.
+// 1 create atpEntityList first.
+// 2 Do the main job outside of first "for" loop by using atpEntityList.
+
+Arrange:
+
+Mock:
+
+Act:
+	
+Assert:
+==========================================================
+checkAnsweredDate(AvailableToPromiseBean availableToPromiseBean,ResponsibleOrderEntity responsibleOrderEntity)
+
+Arrange:
+	AvailableToPromiseBean onTimeBean,delayedBean,nullBean
+	onTimeBean.answeredDate = ZonedDateTime.now().minusDays(1)
+	delayedBean.answeredDate = ZonedDateTime.now().plusDays(1)
+	nullBean.answeredDate = null
+	ResponsibleOrderEntity entity
+	entity.desiredDeliveryDate = ZonedDateTime.now()
+Mock:
+	
+Act:
+	boolean notDelayExpectFalse = checkAnsweredDate(onTimeBean,entity)
+	boolean delayExpectTrue = checkAnsweredDate(delayedBean,entity)
+	boolean resultNull = = checkAnsweredDate(nullBean,entity)
+Assert:
+	notDelayExpectFalse == false
+	delayExpectTrue == true
+	resultNull == false
+
+==========================================================
+loadPortalConfirmList(String userId, long corpId)
+//FIXME Do not use long code in "stream().foreach()" Use "for" instead.
+
+Arrange:
+	PurchaseDashboardAlertEntity entity1,entity2
+	entity1.cause = "ORDER_REMANDED"
+	entity1.priority ="WARNING"
+	entity2.cause = "ORDER_REMANDED"
+	entity3.cause = "ORDER_ORDER_CONFIRMATION_REJECTED"
+	entity3.priority ="hoge"
+	List<PurchaseDashboardAlertEntity> list = Arrays.asList(entity1,entity2,entity3)
+Mock:
+	purchaseDashboardAlertDao.getAllDetailsForSpecificAlert(ANY) :Return list
+	textResourceManager.getTextWithParam("scm.pr.order.dashboard.multiplemessage.info", 2) :Return "testMessageRemand"
+	textResourceManager.getTextWithParam("scm.pr.order.dashboard.confirmrejected.multiplecause.info", 1) :Return "testMessageReject"
+Act:
+	List<OrderManagementDashboardEntity> alertList = loadPortalConfirmList(ANY)
+Assert:
+	alertList[0].iconType == "wap-icon-warning"
+	alertList[0].rowDatas == "testMessageRemand"
+	alertList[0].cause == "ORDER_REMANDED"
+	alertList[1].iconType == null
+	alertList[1].rowDatas =="testMessageReject"
+	alertList[1].cause == "ORDER_ORDER_CONFIRMATION_REJECTED"
+
+==========================================================
+loadInitialFacet(Map<String, List<String>> selectedDataMap)
+
+Arrange:
+	List<String> statusList,emproyeeList,serviceIdList
+Mock:
+	getStatusList() :Return statusList
+	getEmproyeeList() :Retun emproyeeList
+	getServiceIdList() :Return serviceIdList
+Act:
+	Map<String, List<String>> map = loadInitialFacet(ANY)
+Assert:
+	map.size() == 3
+
+==========================================================
+getStatusList()
+
+Arrange:
+
+Mock:
+
+Act:
+	List<String> list = getStatusList()
+Assert:
+	list[0] =="scm.pr.order.estimating.orderwaiting.info"
+	list[1] =="PC.POMT.temporarilySaved"
+	list[2] =="PC.POMT.ordering"
+	list[3] =="PC.POMT.modificationOrdering"
+	list[4] =="PC.POMT.cancelRequest"
+	list[5] =="scm.pr.order.remanded.orderingremanded.info"
+	list[6] =="PC.POMT.modificationRemanded"
+	list[7] =="PC.POMT.cancelRemanded"
+	list[8] =="scm.pr.order.neworder.waitingacceptance.info"
+	list[9] =="scm.pr.order.changeorder.waitingmodification.info"
+	list[10] =="PC.POMT.cancelSheetPrinting"
+	list[11] =="PC.POMT.waitDelivery"
+	list[12] =="PC.POMT.orderPending"
+	list[13] =="PC.POMT.awaitingAcceptance"
+	list[14] =="PC.POMT.waitForProgressBasedInspection"
+	list[15] =="PC.POMT.awaitingOrderMatching"
+	list[16] =="PC.POMT.progressBasedInspecting"
+	list[17] =="PC.POMT.orderMatchingCompleted"
+	list[18] =="PC.POMT.canceled"
+	
+==========================================================
+getEmployeeList()
+
+Arrange:
+	String user = "user"
+Mock:
+	scmUserContext.getPersonInChargeId() : Return user
+Act:
+	List<String> userList = getEmployeeList
+Assert:
+	userList.size() == 1
+
+==========================================================
+getEmployeeListNull()
+
+Arrange:
+	String user = "user"
+Mock:
+	scmUserContext.getPersonInChargeId() : Return null
+Act:
+	List<String> userList = getEmployeeList
+Assert:
+	userList.size() == 0
+==========================================================
+getServiceIdList()
+
+Arrange:
+	ServiceId s1, s2, s3
+	Set<ServidceId> serviceIdSet = Arrays.asSet(s1, s2)
+	ServiceCfg cfg1,cfg2,cfg3
+	cfg1.serviceId =s1
+	cfg2.serviceId =s2
+	cfg3.serviceId =s3
+	Set<ServiceCfg> serviceCfgSet = Arrays.asSet(cfg1,cfg2,cfg4,cfg3)
+Mock:
+	authorityManager.getAccessibleServiceIds(ANY):Return serviceIdSet 
+	getServiceCfgsByServiceDefId(ServiceDefId.valueOf("ScmProcurementPurchaseOrderApplication") :Return serviceCfgSet
+Act:
+	List<String> list = getServiceIdList()
+Assert:
+	list.size() ==2
+	list[0].serviceId = s1
+	list[1].serviceId = s2
+==========================================================
+getFacetSearchedRows(Map<String, List<String>> filteredDataValueMap, int currentCount, int fetchLimit, boolean isDetailMode, String keyword)
+//FIXME Method is too long. Devide getFacetSearchedRows and getFacetSearchedRowsForDetail. 
+//      Delete the parameter of "isDetailMode"
+
+Arrange:
+	UUID orderId = UUID.randomUUID
+	ZonedDateTime today = ZonedDateTime.now()
+	FullTextSearchResult searchResult 
+	WapInboxTagRendererVo waitingStatus
+
+	searchResult.total = 2
+	HitDocument = doc1,doc2
+	Map<String, Object> docMap1,docMap2
+
+	docMap1.put("order_type","PROCUREMENT_REQUEST")
+	docMap1.put("order_plan_title","orderTitle")
+	docMap1.put("order_status_plan_name", MLString("orderStatusName","EN"))
+	docMap1.put("order_id",orderId.toString())
+	docMap1.put("order_type","orderType")
+	docMap1.put("order_plan_person_in_charge_name",MLString("orderEmployeeName","EN"))
+	docMap1.put("order_date_time",today.toString())
+	docMap1.put("delivery_date",today.toString())
+	docMap1.put("sending_method_plan_name",MLString("sendingMethodName","EN"))
+	docMap1.put("purchase_request_plan_employee_name","purchaseRequestEmployeeName")
+	docMap1.put("service_plan_id","serviceName")
+	
+
+	docMap2.put("order_type","OTHER")
+	docMap2.put("order_title","orderTitle")
+	docMap2.put("order_status_name", MLString("orderStatusName","EN"))
+	docMap2.put("order_id",orderId.toString())
+	docMap2.put("order_type","orderType")
+	docMap2.put("order_person_in_charge_name",MLString("orderEmployeeName","EN"))
+	docMap2.put("order_date_time",today.toString())
+	docMap2.put("delivery_date",today.toString())
+	docMap2.put("purchase_request_employee_name","purchaseRequestEmployeeName")
+	docMap2.put("service_header_id","serviceName")
+	docMap2.put("sending_method_name",MLString("sendingMethodName","EN"))
+	docMap2.put("order_status","NonNull")
+
+
+	doc1.hitField(docMap1)
+	doc2.hitField(docMap2)
+	List<HitDocument> hits = Arrays.asList(doc1,doc2)
+	searchResult.hits = hits
+
+Mock:
+	searchInElasticSearch(ANY): Return searchResult
+	getStatusVal(ANY) :Return "orderStatusValue"
+	getStatus(ANY) :Return waitingStatus
+Act:
+	OrderSearchResultVo vo =getFacetSearchedRows(ANY)
+Assert:
+	OrderSearchResultEntity planEntity = vo.orderSearchResultEntityList[0]
+	OrderSearchResultEntity entity = vo.orderSearchResultEntityList[1]
+
+	planEntity.type =="PROCUREMENT_REQUEST"
+	planEntity.orderTitle == "orderTitle"
+	planEntity.orderStarusName == "orderStatusName"
+	planEntity.orderId == orderId
+	planEntity.orderType == "orderType"
+	planEntity.orderEmployeeName == "orderEmployeeName"
+	planEntity.orderDate == today
+	planEntity.deliveryDate == today
+	planEntity.sendingMethodName == "sendingMethodName"
+	planEntity.purchaseRequestEmployeeName =="purchaseRequestEmployeeName"
+	planEntity.serviceName == "serviceName"
+	planEntity.orderStatusValue == "orderStatusValue"
+
+	entity.type =="OTHERS"
+	entity.orderTitle == "orderTitle"
+	entity.orderStarusName == "orderStatusName"
+	entity.orderId == orderId
+	entity.orderType == "orderType"
+	entity.orderEmployeeName == "orderEmployeeName"
+	entity.orderDate == today
+	entity.deliveryDate == today
+	entity.sendingMethodName == "sendingMethodName"
+	entity.purchaseRequestEmployeeName =="purchaseRequestEmployeeName"
+	entity.serviceName == "serviceName"
+	entity.orderStatusValue == "orderStatusValue"
+
+==========================================================
+loadDraftExpand(UserSegmentEnum key)
+
+Arrange:
+	Map<String, Object> map
+	map.put("key","Value") 
+Mock:
+	session.get("dataValue", String.class): Return "data")
+	session.get("modeValue", String.class): Return "mode")
+	getDraftData(ANY): Return map
+Act:
+	resultMap = loadDraftExpand(ANY)
+Assert:
+	resultMap.get("key") == "value"
+
+==========================================================
+checkStatus(List<ResponsibleOrderInboxVo> responsibleOrderEntityList, String Status)
+
+Arrange:
+	ResponsibleOrderInboxVo vo1 vo2
+	vo1.orderStatus = "status"
+	vo2.orderStatus = "notStatus"
+	List<ResponsibleOrderInboxVo> list = arrays.asList(vo1,vo2)
+	String status = "status"
+
+Mock:
+	
+Act:
+	List<ResponsibleOrderInboxVo> resultList = checkStatus(list,status)
+Assert:
+	resultList.size() ==0
+	resultList[0].orderaStatus = "status"
+==========================================================
