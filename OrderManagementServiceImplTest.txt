@@ -1359,3 +1359,17 @@ Assert:
 	resultList.size() ==0
 	resultList[0].orderaStatus = "status"
 ==========================================================
+generateInboxIconRendererVo(String priority)
+
+Arrange:
+	String priority = "WARNING"
+	String prioritySmall = "warning"
+Mock:
+
+Act:
+	WapInboxIconRendererVo vo = generateInboxIconRendererVo(priority)
+	WapInboxIconRendererVo voSmall = generateInboxIconRendererVo(prioritySmall)
+Assert:
+	vo.iconType == "wap-icon-warning"
+	voSmall.iconType == "wap-icon-danger"
+==========================================================
