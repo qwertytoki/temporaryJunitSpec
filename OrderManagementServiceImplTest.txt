@@ -1363,13 +1363,13 @@ generateInboxIconRendererVo(String priority)
 
 Arrange:
 	String priority = "WARNING"
-	String prioritySmall = "warning"
+	String priorityNull = null
 Mock:
 
 Act:
 	WapInboxIconRendererVo vo = generateInboxIconRendererVo(priority)
-	WapInboxIconRendererVo voSmall = generateInboxIconRendererVo(prioritySmall)
+	WapInboxIconRendererVo voNull = generateInboxIconRendererVo(priorityNull)
 Assert:
 	vo.iconType == "wap-icon-warning"
-	voSmall.iconType == "wap-icon-danger"
+	voNull.iconType == "wap-icon-danger"
 ==========================================================

@@ -758,11 +758,9 @@ public class OrderManagementServiceImpl implements OrderManagementService {
     }
 
     /**
-     * generateInboxIconRendererVo.
+     * Return Warning Icon if priority is "WARNING". else return Danger Icon.
      *
-     * @param priority
-     *            the priority
-     * @return the wap inbox icon renderer vo
+     * @param String priority
      */
     private WapInboxIconRendererVo generateInboxIconRendererVo(String priority) {
         CommonAllColorType type = StringUtils.equals(priority, OrderManagementConstant.WARNING)
