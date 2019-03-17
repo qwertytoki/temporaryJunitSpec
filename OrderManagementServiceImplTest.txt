@@ -1373,3 +1373,35 @@ Assert:
 	vo.iconType == "wap-icon-warning"
 	voNull.iconType == "wap-icon-danger"
 ==========================================================
+setSwitchToVendorData(List<ResponsibleOrderBySupEntity> responsibleOrderBySupEntityList) 
+これ途中のsupplierNameMap何のデータ入ってくるかわからない。デバッグして確認
+
+Arrange:
+	ResponsibleOrderBySupEntity ent1,ent2,ent3
+	//ここちゃんと修正
+	Supplier = sup1,sup2,sup3
+	ent1.supplier = sup1
+	ent2.supplier = ""
+	ent3.supplier = sup3
+	ent1.supplierName = "sup1Name"
+	ent2.supplierName = "sup2Name"
+	ent3.supplierName = "sup3Name"
+	ent1.sendMethodName = "sup1SendMethod"
+	ent2.sendMethodName = "sup2SendMethod"
+	ent3.sendMethodName = "sup3SendMethod"
+	List<ResponsibleOrderBySupEntity> list = Arrays.asList(ent1,ent2,ent3)
+Mock:
+	textResourceManager.getTextWithParam(ANY) :Return "text"
+Act:
+	Map<String, Object> resultMap = setSwitchToVendorData(list)
+Assert:
+	List<OrderBySupEntity> resultList = resultMap.get("switchToVendorData")
+	resultList.size() ==2
+	resultList[0].supplier =="sup1"
+	resultList[0].supplierName =="sup1Name"
+	resultList[0].sendMethodName == "sup1SendMethod"
+	resultList[1].supplier =="sup3"
+	resultList[1].supplierName =="sup3Name"
+	resultList[1].sendMethodName == "sup3SendMethod"
+
+==========================================================

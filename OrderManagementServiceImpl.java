@@ -789,13 +789,16 @@ public class OrderManagementServiceImpl implements OrderManagementService {
                 .filter(entity -> Objects.nonNull(entity.getSupplier())
                         && StringUtils.isNotEmpty(entity.getSupplier().toString()))
                 .collect(Collectors.toList());
-        Map<Object, List<String>> supplierNameMap = responsibleOrderBySupEntityList
+        Map<String, List<String>> supplierNameMap = responsibleOrderBySupEntityList
                 .stream()
                 .map(mapper -> mapper.getSupplierName().get())
                 .collect(Collectors.groupingBy(classifier -> classifier, Collectors.toList()));
 
-        List<String> supplierList = responsibleOrderBySupEntityList.stream()
-                .map(mapper -> mapper.getSupplier().toString()).distinct().collect(Collectors.toList());
+        List<String> supplierList = responsibleOrderBySupEntityList
+                .stream()
+                .map(mapper -> mapper.getSupplier().toString())
+                .distinct()
+                .collect(Collectors.toList());
 
         List<OrderBySupEntity> printList = responsibleOrderBySupEntityList
                 .stream()
@@ -804,22 +807,21 @@ public class OrderManagementServiceImpl implements OrderManagementService {
                         && supplierList.contains(entity.getSupplier().toString()))
                 .map(mapper -> {
 
-                    OrderBySupEntity orderBySupEntityList = new OrderBySupEntity();
+                    OrderBySupEntity orderBySupEntity = new OrderBySupEntity();
                     if (Objects.nonNull(mapper.getSupplierName())) {
-                        orderBySupEntityList.setSupplierName(mapper.getSupplierName().get());
+                        orderBySupEntity.setSupplierName(mapper.getSupplierName().get());
                     }
                     if (Objects.nonNull(mapper.getSendMethodName())) {
-                        orderBySupEntityList.setSendMethodName(mapper.getSendMethodName().get());
+                        orderBySupEntity.setSendMethodName(mapper.getSendMethodName().get());
                     }
                     List<String> orderCountList = supplierNameMap.get(mapper.getSupplierName().get());
                     List<String> orderTitleList = supplierNameMap.get(mapper.getTitle());
                     String waitOrderStringArugument = textResourceManager.getTextWithParam(
-                            TextId.of(OrderManagementConstant.PURCHASE_ORDER),
-                            orderCountList.size());
-                    orderBySupEntityList.setPurchaseCount(waitOrderStringArugument);
-                    orderBySupEntityList.setTitle(orderTitleList);
+                        TextId.of(OrderManagementConstant.PURCHASE_ORDER),orderCountList.size());
+                    orderBySupEntity.setPurchaseCount(waitOrderStringArugument);
+                    orderBySupEntity.setTitle(orderTitleList);
                     supplierList.remove(mapper.getSupplier().toString());
-                    return orderBySupEntityList;
+                    return orderBySupEntity;
                 }).collect(Collectors.toList());
         switchToVendorReturnMap.put("switchToVendorData", printList);
 
