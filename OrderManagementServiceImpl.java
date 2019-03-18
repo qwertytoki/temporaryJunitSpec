@@ -2448,7 +2448,7 @@ public class OrderManagementServiceImpl implements OrderManagementService {
     }
 
     /**
-     * assignToUser is used to assign.
+     * set personInChargeId and Name to orderPlan or order(Depends on type =="PROCUREMENT_REQUEST").
      *
      * @param orderManagementEntity
      *            the order management entity
