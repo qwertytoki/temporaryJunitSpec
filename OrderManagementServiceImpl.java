@@ -1898,18 +1898,6 @@ public class OrderManagementServiceImpl implements OrderManagementService {
                     "orderWaitDeliveryInboxList",
                     inboxGroupList.subList(OrderManagementConstant.NUMERIC_ZERO, currentCount + countDifference));
         }
-
-        // if (filterWaitDataEntityList.size() == inboxGroupList.size()) {
-        // dataMap.put("seeMoreAnchorLabel", new WapButtonVo.Builder().display(CommonDisplayType.NONE)
-        // .label(textResourceManager.getTextWithParam(
-        // TextId.of(OrderManagementConstant.SEE_MORE)))
-        // .build());
-        // } else {
-        // dataMap.put("seeMoreAnchorLabel", new WapButtonVo.Builder().display(CommonDisplayType.DISPLAYED)
-        // .label(textResourceManager.getTextWithParam(
-        // TextId.of(OrderManagementConstant.SEE_MORE)))
-        // .build());
-        // }
         WapStatsLabelVo wapHeaderLabelVo = setHeaderLabelAndCount(inboxGroupList,
                 OrderManagementConstant.SCM_PR_ORDER_WAITING_HEADER_INFO);
         dataMap.put("waitDeliveryStatsLabel", wapHeaderLabelVo);

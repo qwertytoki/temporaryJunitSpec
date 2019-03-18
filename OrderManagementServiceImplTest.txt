@@ -1579,6 +1579,7 @@ Act:
 Assert:
 ==========================================================
 getVendorFilteredRecords(String userId, long corporationId, UserSegmentEnum userSegment)
+//FIXME Delete this method. you can directly call "responsibleOrderBySupDao.getVendorFilteredRecords" instead
 Arrange:
 
 Mock:
