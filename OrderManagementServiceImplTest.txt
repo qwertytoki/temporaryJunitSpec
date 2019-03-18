@@ -1529,13 +1529,45 @@ Act:
 Assert:
 ==========================================================
 loadSwitchToVendor(UserSegmentEnum userSegment)
+OrderStatusちゃんと直してからコミット
+supplierの型を正してからコミット
+
 Arrange:
+	ResponsibleOrderBySupEntity ent1,ent2,ent3,ent4
+	ent1.supplierName =""
+	ent2.supplierName ="supplierName2"
+	ent3.supplierName ="supplierName3"
+	ent4.supplierName ="supplierName4"
+	ent1.orderStatus = "WAITING_FOR_MODIFICATION_ORDER_SHEET_PRINTING"
+	ent2.orderStatus = ""
+	ent3.orderStatus = "WAITING_FOR_MODIFICATION_ORDER_SHEET_PRINTING"
+	ent4.orderStatus = "WAITING_FOR_MODIFICATION_ORDER_SHEET_PRINTING"
+	ent1.supplier = "supplier1"
+	ent2.supplier = "supplier2"
+	ent3.supplier = "supplier3"
+	ent4.supplier = "supplier4"
+	List<ResponsibleOrderBySupEntity> entList = Arrays.asList(ent1,ent2,ent3,ent4)
+
+	ResponsibleOrderInboxVo vo1,vo2,vo3,vo4
+	vo1.orderStatus = "WAITING_FOR_MODIFICATION_ORDER_SHEET_PRINTING"
+	vo2.orderStatus = ""
+	vo3.orderStatus = "WAITING_FOR_MODIFICATION_ORDER_SHEET_PRINTING"
+	vo4.orderStatus = "WAITING_FOR_MODIFICATION_ORDER_SHEET_PRINTING"
+	vo1.supplier = "supplier1"
+	vo2.supplier = "supplier2"
+	vo3.supplier = "supplier3_NOT"
+	vo4.supplier = "supplier4"
+	List<ResponsibleOrderInboxVo> voList = Arrays.asList(vo1,vo2,vo3,vo4)
 
 Mock:
-
+	getVendorFilteredRecords :Return entList
+	getFilteredRecords(ANY) :Return voList
 Act:
-
+	loadSwitchToVendor(ANY)
 Assert:
+	// Note: Use ArgumentCaptor
+	verify(OrderManagementService, times(1)).setSwitchToVendorData(captor1);
+	captor1.getValue()[0].supplierName == "suuplierName4"
 ==========================================================
 loadLazyWaitingForDelivery(OrderManagementEntity orderManagementEntity, UserSegmentEnum userSegment)
 Arrange:

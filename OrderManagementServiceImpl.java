@@ -1312,7 +1312,6 @@ public class OrderManagementServiceImpl implements OrderManagementService {
         AtomicInteger fetchLimit = new AtomicInteger();
         fetchLimit.set(orderManagementEntity.getFetchLimit());
         fetchLimit.set(fetchLimit.get() + currentCount);
-        List<ResponsibleOrderInboxVo> inboxGroupList = new ArrayList<>();
         List<ResponsibleOrderInboxVo> applyingDataEntityList = getFilteredRecords(scmUserContext.getUserId()
                 .toString(),
                 userSegment, OrderManagementConstant.ON_ORDER, corpId,
@@ -1321,34 +1320,21 @@ public class OrderManagementServiceImpl implements OrderManagementService {
                 OrderStatus.ORDERING_ON_REQUEST.name(),
                 OrderStatus.MODIFICATION_ON_REQUEST.name(),
                 OrderStatus.CANCEL_ON_REQUEST.name());
-        List<ResponsibleOrderInboxVo> filterApplyingDataEntityList = applyingDataEntityList.stream()
+        List<ResponsibleOrderInboxVo> filterApplyingDataEntityList = applyingDataEntityList
+                .stream()
                 .filter(e -> availableStatuses.contains(e.getOrderStatus()))
                 .collect(Collectors.toList());
 
-        List<ResponsibleOrderInboxVo> orderRequestList = renderStatusLabel(
+        List<ResponsibleOrderInboxVo> inboxGroupList = renderStatusLabel(
                 filterApplyingDataEntityList);
-        inboxGroupList.addAll(orderRequestList);
-        filterApplyingDataEntityList.stream().forEach(action -> {
-            int count = inboxGroupList.size();
-            if (count < fetchLimit.get() && (count < filterApplyingDataEntityList.size())) {
-                inboxGroupList.add(filterApplyingDataEntityList.get(count));
-            }
-        });
-
-        // if (currentCount == applyingDataEntityList.size()) {
-        // dataMap.put(
-        // "seeMoreAnchorLabel",
-        // new WapButtonVo.Builder().display(CommonDisplayType.NONE)
-        // .label(textResourceManager.getTextWithParam(
-        // TextId.of(OrderManagementConstant.SEE_MORE)))
-        // .build());
-        // } else {
-        // dataMap.put("seeMoreAnchorLabel", new WapButtonVo.Builder().display(CommonDisplayType.DISPLAYED)
-        // .label(textResourceManager.getTextWithParam(
-        // TextId.of(OrderManagementConstant.SEE_MORE)))
-        // .build());
-        //
-        // }
+        filterApplyingDataEntityList
+                .stream()
+                .forEach(action -> {
+                        int count = inboxGroupList.size();
+                        if (count < fetchLimit.get() && (count < filterApplyingDataEntityList.size())) {
+                                inboxGroupList.add(filterApplyingDataEntityList.get(count));
+                        }
+                });
 
         WapStatsLabelVo wapHeaderLabelVo = setHeaderLabelAndCount(inboxGroupList,
                 OrderManagementConstant.APPLYING);
@@ -1696,16 +1682,18 @@ public class OrderManagementServiceImpl implements OrderManagementService {
         List<String> enumList = new ArrayList<>();
         enumList.add(OrderStatus.WAITING_FOR_ORDER_SHEET_PRINTING.name());
         enumList.add(OrderStatus.WAITING_FOR_MODIFICATION_ORDER_SHEET_PRINTING.name());
-        responsibleOrderEntityList.stream().forEach(
-                action -> registrationEntityList.stream().filter(
-                        entity -> Objects.nonNull(entity.getSupplier())
-                                && StringUtils.isNotEmpty(entity.getSupplier().toString())
-                                &&
-                                StringUtils.isNotEmpty(action.getSupplier())
-                                &&
-                                entity.getSupplier().toString().equals(action.getSupplier())
-                                && enumList.contains(action.getOrderStatus()))
-                        .forEach(registrationEntityCheckList::add));
+        responsibleOrderEntityList
+                .stream()
+                .forEach(
+                        action -> registrationEntityList
+                                .stream()
+                                .filter(
+                                        entity -> Objects.nonNull(entity.getSupplier())
+                                        && StringUtils.isNotEmpty(entity.getSupplier().toString())
+                                        && StringUtils.isNotEmpty(action.getSupplier())
+                                        && entity.getSupplier().toString().equals(action.getSupplier())
+                                        && enumList.contains(action.getOrderStatus()))
+                                .forEach(registrationEntityCheckList::add));
 
         return setSwitchToVendorData(registrationEntityCheckList);
     }
