@@ -1431,13 +1431,49 @@ Assert:
 loadConfirmExpand(String key)
 
 Arrange:
+	String remandKey = "ORDER_MODIFICATION_REMANDED"
+	String rejectKey = "ORDER_ORDER_CONFIRMATION_REJECTED"
+	String atpKey = "ORDER_ATP_ANSWER_INCLUDES_SOME_PROBLEMS"
+	String orderRemandKey = "ORDER_REMANDED"
 
+
+	
+	ResponsibleOrderInboxVo remandedVo
+	List<ResponsibleOrderInboxVo> remandedVoList = Arrays.asList(remandedVo) 
+
+	ResponsibleOrderInboxVo rejectedVo
+	List<ResponsibleOrderInboxVo> rejectedVoList = Arrays.asList(rejectedVo) 
+	
+	ResponsibleOrderInboxVo atpVo
+	List<ResponsibleOrderInboxVo> atpVoList = Arrays.asList(atpVo) 
+
+	ResponsibleOrderInboxVo orderRemandedVo1,orderRemandedVo2
+	orderRemandedVo2.orderStatus = OrderStatus.ORDERING_REMANDED
+	List<ResponsibleOrderInboxVo> orderRemandedVoList = Arrays.asList(orderRemandedVo2)
 Mock:
+	getFilteredRecords(ANY,ANY,"REMANDED",ANY,ANY,ANY) :Return remandedVoList
+	checkOrderModifiedRemandedStatus(remandedVoList) :Return "remandedVoList"
+	getFilteredRecords(ANY,ANY,"WAITING_FOR_CONFIRMATION_ANSWER_INPUT",ANY,ANY,ANY) :Return rejectedVoList
+	checkOrderModifiedRemandedStatus(rejectedVoList) :Return "rejectedVoList"
+	getFilteredRecords(ANY,ANY,"ORDER_ATP_ANSWER_INCLUDES_SOME_PROBLEMS",ANY,ANY,ANY) :Return atpVoList
+	checkOrderModifiedRemandedStatus(atpVoList) :Return "atpVoList"
+	
+	getFilteredRecords(ANY,ANY,"ON_ORDER",ANY,ANY,ANY) :Return orderRemandedVoList
+	checkOrderModifiedRemandedStatus(orderRemandedVoList) :Return "orderRemandedVoList"
+	
 
 Act:
+	Map<String,object> remandedMap = loadConfirmExpand(remandKey)
+	Map<String,object> rejectedMap = loadConfirmExpand(rejectKey)
+	Map<String,object> atpMap = loadConfirmExpand(atpKey)
+	Map<String,object> orderRemandedMap = loadConfirmExpand(orderRemandKey)
 
 Assert:
-
+	remandedMap.get("orderDashboardExpandInboxData")=="remandedVoList"
+	remandedMap.get("orderDashboardExpandInboxData")=="rejectedVoList"
+	remandedMap.get("orderDashboardExpandInboxData")=="atpVoList"
+	remandedMap.get("orderDashboardExpandInboxData")=="orderRemandedVoList"
+	
 ==========================================================
 checkOrderModifiedRemandedStatus(List<ResponsibleOrderInboxVo> responsibleOrderEntityList)
 Arrange:

@@ -860,7 +860,7 @@ public class OrderManagementServiceImpl implements OrderManagementService {
     }
 
     /**
-     * loadConfirmExpand.
+     * Create order views that user needs to confirm(rejected,remanded etc.)
      *
      * @param key
      *
