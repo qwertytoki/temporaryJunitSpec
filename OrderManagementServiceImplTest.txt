@@ -1653,11 +1653,11 @@ Arrange:
 	String type = "PROCUREMENT_REQUEST"
 	String tyepHoge = "hoge"
 
-	OrderPlanHeaderEntity ent 
-	ent.orderPlanId =headId
-	ent.orderStatus = "status"
-	OrderPlanDetailEntity detailEnt
-	List<OrderPlanDetailEntity> detailList = Arrays.asList(detailEnt)
+	OrderPlanHeaderEntity entPlan 
+	entPlan.orderPlanId =headId
+	entPlan.orderStatus = "status"
+	OrderPlanDetailEntity detailPlanEnt
+	List<OrderPlanDetailEntity> detailPlanList = Arrays.asList(detailPlanEnt)
 
 	OrderHeaderEntity ent 
 	ent.orderId =headId
@@ -1667,8 +1667,10 @@ Arrange:
 
 Mock:
 	personInChargeDao.get(ANY) :Return null
-	orderPlanHeaderDao.getSingle(orderId) :Return ent
-	orderPlanDetailDao.getAllRecords(orderId) :Return detailList
+	orderPlanHeaderDao.getSingle(orderId) :Return entPlan
+	orderPlanDetailDao.getAllRecords(orderId) :Return detailPlanList
+	orderHeaderDao.getSingle(orderId) :Return ent
+	orderDetailDao.getAllRecords(orderId) :Return detailList
 Act:
 	assignToUser(orderId.toString(),type)
 	assignToUser(orderId.toString(),tyepHoge)
@@ -1703,12 +1705,64 @@ Assert:
 ==========================================================
 insertChangedPurchaser(OrderManagementEntity orderManagementEntity)
 Arrange:
+	UUID orderId1 = UUID.randomUUID()
+	UUID orderId2 = UUID.randomUUID()
+	String type = "PROCUREMENT_REQUEST"
+	String tyepHoge = "hoge"	
+
+	OrderManagementEntity ent1,ent2
+	ent1.orderTypeList = type
+	ent1.orderIdList = orderId1
+
+	ent2.orderTypeList = typeHoge
+	ent2.orderIdList = orderId2
+	
+	OrderPlanHeaderEntity entPlan 
+	entPlan.orderPlanId =orderId1
+	entPlan.orderStatus = "status"
+	OrderPlanDetailEntity detaiPlanlEnt
+	List<OrderPlanDetailEntity> detailList = Arrays.asList(detailPlanEnt)
+
+	OrderHeaderEntity ent 
+	ent.orderId =headId
+	ent.orderStatus = "status"
+	OrderDetailEntity detailEnt
+	List<OrderDetailEntity> detailList = Arrays.asList(detailEnt)
 
 Mock:
+	personInChargeDao.get(ANY) :Return null
+	orderPlanHeaderDao.getSingle(orderId) :Return ent
+	orderPlanDetailDao.getAllRecords(orderId) :Return detailList
+	insertToPlanHeaderEntity(ANY) :Return entPlan
+	insertToHeaderEntity(ANY): Return ent
 
 Act:
+	insertChangedPurchaser(ent1)
+	insertChangedPurchaser(ent2)
 
 Assert:
+	// Note: Use ArgumentCaptor
+	verify(orderPlanHeaderDao, times(1)).insert(captor1);
+	resultEnt = captor1.getValue()
+	resultEnt.orderPlanId == orderId1
+
+	verify(orderSearchRegisterService, times(1)).register(captor1,captor2,captor3,captor4,captor5);
+	captor1.getValue() == orderId1
+	captor2.getValue() == "status"
+	captor3.getValue() == ent
+	captor4.getValue() == detailList
+
+	verify(orderPlanHeaderDao, times(2)).insert(captor1);
+	resultEnt = captor1.getValue()
+	resultEnt.orderPlanId == orderId2
+
+
+	verify(orderSearchRegisterService, times(2)).register(captor1,captor2,captor3,captor4,captor5);
+	captor1.getValue() == orderId2
+	captor2.getValue() == "status"
+	captor3.getValue() == ent
+	captor4.getValue() == detailList
+	
 ==========================================================
 insertToHeaderEntity(OrderHeaderEntity orderHeaderEntity, UUID orderId, OrderManagementEntity orderManagementEntity)
 Arrange:

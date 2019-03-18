@@ -2489,7 +2489,7 @@ public class OrderManagementServiceImpl implements OrderManagementService {
     }
 
     /**
-     * insertChangedPurchaser is used to Insert the purchase which is changed.
+     * update orderHeader(or orderPlanHeader) data and search data after changing purchaser
      *
      * @param orderManagementEntity
      *
@@ -2497,7 +2497,6 @@ public class OrderManagementServiceImpl implements OrderManagementService {
     @Override
     public void insertChangedPurchaser(OrderManagementEntity orderManagementEntity) {
         UUID orderId = UUID.fromString(orderManagementEntity.getOrderIdList());
-        String userId = orderManagementEntity.getUserIdList();
         String type = orderManagementEntity.getOrderTypeList();
         if (type.equals(OrderManagementConstant.PROCUREMENT_REQUEST_TYPE)) {
             OrderPlanHeaderEntity orderPlanHeaderEntity = orderPlanHeaderDao.getSingle(orderId);
