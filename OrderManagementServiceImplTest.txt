@@ -152,7 +152,7 @@ loadEmptyMethod(ANY) should get List<ResponsibleOrderInboxVo> responsibleOrderVo
 
 Arrange:
 	String typeOfWaiting = "WAITING_FOR_PROVISIONAL_ORDER_COMMITION"
-        String typeOfNotWaiting = "UNUSED_TYPE"
+    String typeOfNotWaiting = "UNUSED_TYPE"
 	UUID u1 = UUID.randomUUID();
 	UUID u2 = UUID.randomUUID();
 	ResponsibleOrderEntity entity
@@ -182,7 +182,7 @@ loadEmptyMethod(ANY) should get List<ResponsibleOrderInboxVo> responsibleOrderVo
 
 Arrange:
 	String typeOfWaiting = "WAITING_FOR_PROVISIONAL_ORDER_COMMITION"
-        String typeOfNotWaiting = "UNUSED_TYPE"
+    String typeOfNotWaiting = "UNUSED_TYPE"
 	UUID u1 = UUID.randomUUID();
 	UUID u2 = UUID.randomUUID();
 	ResponsibleOrderEntity entity
@@ -264,11 +264,6 @@ Assert:
     bothNullList.size() == 0
 ==========================================================
 loadSorting()
-
-//FIXME
-case OrderManagementConstant.ORDER:
-case OrderManagementConstant.CASE:
-will never reach. DELETE this source code. 
 
 Arrange:
 	ZonedDateTime today =  ZonedDateTime.now()
@@ -446,13 +441,12 @@ Assert:
 
 ==========================================================
 renderStatusLabel()
-// FIXME Predicate<ResponsibleOrderInboxVo> pred is not used. delete it.
 
 Arrange:
 	ResponsibleOrderInboxVo vo1,vo2,vo3,voHoge
-	vo1.status = "PC.POMT.modificationRemanded"
-	vo2.status = "scm.pr.order.estimating.orderwaiting.info"
-	vo3.status = "PC.POMT.canceled"
+	vo1.status = "MODIFICATION_REMANDED"
+	vo2.status = "PRE_ORDER_ON_WAITING_FOR_ACCEPTANCE"
+	vo3.status = "CANCELED"
 	voHoge.status = "hoge"
 	List<ResponsibleOrderInboxVo> vos = Arrays.asList(vo1,vo2,vo3,vo4,voHoge)
 Mock:
@@ -505,7 +499,6 @@ Assert:
 
 ==========================================================
 setRemandData(List<ResponsibleOrderInboxVo> remandedDataEntityList, String dataValue,String modeValue)
-// FIXME String dataValue,modeValue is unused. DELETE.
 
 Arrange:
 	ResponsibleOrderInboxVo inboxVo
@@ -528,8 +521,7 @@ checkOrderRemandedStatus(List<ResponsibleOrderInboxVo> responsibleOrderEntityLis
 //FIXME DELETE this method. You can call renderStatusLabel() directly.
 
 ==========================================================
-setDraftData(List<ResponsibleOrderInboxVo> draftDataEntityList, UserSegmentEnum userSegment, String modeValue)
-//FIXME String modeValue is not used . DELETE.
+setDraftData(List<ResponsibleOrderInboxVo> draftDataEntityList, UserSegmentEnum userSegment)
 
 Arrange:
 	OrderManagementPortalEntity entity
@@ -744,8 +736,6 @@ Assert:
 
 ==========================================================
 fetchBarcodeRecords(OrderHeaderEntity orderHeaderEntity)
-//FIXME orderDashboardOnGoingDao.getAllFilteredData(orderHeaderEntity.getOrderId()).get(0); 
-// This source code is BAD. FIX [if(List.size()==0) return emptyList; ]
 
 Arrange:
 	OrderHeaderEntity entity,entityNull
@@ -960,16 +950,16 @@ buildApplyOrderMessage(Map<String, Integer> groupMap)
 	
 Arrange:
 	Map<String, Integer> groupMap
-	groupMap.put("scm.pr.order.remanded.orderingremanded.info",3)
-	groupMap.put("PC.POMT.cancelRemanded",5)
-	groupMap.put("PC.POMT.modificationRemanded",7)
-	groupMap.put("PC.POMT.temporarilySaved",11)
+	groupMap.put("ORDERING_REMANDED",3)
+	groupMap.put("CANCELLATION_REMANDED",5)
+	groupMap.put("MODIFICATION_REMANDED",7)
+	groupMap.put("ORDERING_ON_TEMPORARY_SAVING",11)
 
 	Map<String, Integer> groupZeroMap
-	groupZeroMap.put("scm.pr.order.remanded.orderingremanded.info",0)
-	groupZeroMap.put("PC.POMT.cancelRemanded",0)
-	groupZeroMap.put("PC.POMT.modificationRemanded",0)
-	groupZeroMap.put("PC.POMT.temporarilySaved",0)
+	groupZeroMap.put("ORDERING_REMANDED",0)
+	groupZeroMap.put("CANCELLATION_REMANDED",0)
+	groupZeroMap.put("MODIFICATION_REMANDED",0)
+	groupZeroMap.put("ORDERING_ON_TEMPORARY_SAVING",0)
 	
 Mock:
 	textResourceManager.getTextWithParam("PC.POMT.applyingForOrder") :Return "test"
@@ -1378,11 +1368,12 @@ setSwitchToVendorData(List<ResponsibleOrderBySupEntity> responsibleOrderBySupEnt
 
 Arrange:
 	ResponsibleOrderBySupEntity ent1,ent2,ent3
-	//ここちゃんと修正
-	Supplier = sup1,sup2,sup3
-	ent1.supplier = sup1
+	UUID supId1 =  UUID.randomUUID()
+	UUID supId2 =  UUID.randomUUID()
+	UUID supId3 =  UUID.randomUUID()
+	ent1.supplier = supId1
 	ent2.supplier = ""
-	ent3.supplier = sup3
+	ent3.supplier = supId3
 	ent1.supplierName = "sup1Name"
 	ent2.supplierName = "sup2Name"
 	ent3.supplierName = "sup3Name"
@@ -1397,10 +1388,10 @@ Act:
 Assert:
 	List<OrderBySupEntity> resultList = resultMap.get("switchToVendorData")
 	resultList.size() ==2
-	resultList[0].supplier =="sup1"
+	resultList[0].supplier ==sup1
 	resultList[0].supplierName =="sup1Name"
 	resultList[0].sendMethodName == "sup1SendMethod"
-	resultList[1].supplier =="sup3"
+	resultList[1].supplier ==sup3
 	resultList[1].supplierName =="sup3Name"
 	resultList[1].sendMethodName == "sup3SendMethod"
 
@@ -1533,6 +1524,11 @@ OrderStatusちゃんと直してからコミット
 supplierの型を正してからコミット
 
 Arrange:
+	UUID sup1 = UUID.randomUUID()
+	UUID sup2 = UUID.randomUUID()
+	UUID sup3 = UUID.randomUUID()
+	UUID sup4 = UUID.randomUUID()
+
 	ResponsibleOrderBySupEntity ent1,ent2,ent3,ent4
 	ent1.supplierName =""
 	ent2.supplierName ="supplierName2"
@@ -1542,10 +1538,10 @@ Arrange:
 	ent2.orderStatus = ""
 	ent3.orderStatus = "WAITING_FOR_MODIFICATION_ORDER_SHEET_PRINTING"
 	ent4.orderStatus = "WAITING_FOR_MODIFICATION_ORDER_SHEET_PRINTING"
-	ent1.supplier = "supplier1"
-	ent2.supplier = "supplier2"
-	ent3.supplier = "supplier3"
-	ent4.supplier = "supplier4"
+	ent1.supplier = sup1
+	ent2.supplier = sup2
+	ent3.supplier = sup3
+	ent4.supplier = sup4
 	List<ResponsibleOrderBySupEntity> entList = Arrays.asList(ent1,ent2,ent3,ent4)
 
 	ResponsibleOrderInboxVo vo1,vo2,vo3,vo4
@@ -1553,10 +1549,10 @@ Arrange:
 	vo2.orderStatus = ""
 	vo3.orderStatus = "WAITING_FOR_MODIFICATION_ORDER_SHEET_PRINTING"
 	vo4.orderStatus = "WAITING_FOR_MODIFICATION_ORDER_SHEET_PRINTING"
-	vo1.supplier = "supplier1"
-	vo2.supplier = "supplier2"
-	vo3.supplier = "supplier3_NOT"
-	vo4.supplier = "supplier4"
+	vo1.supplier = sup1.toString()
+	vo2.supplier = sup2.toString()
+	vo3.supplier = "test"
+	vo4.supplier = sup4.toString()
 	List<ResponsibleOrderInboxVo> voList = Arrays.asList(vo1,vo2,vo3,vo4)
 
 Mock:
@@ -1589,7 +1585,6 @@ Act:
 Assert:
 ==========================================================
 assignToUser(String orderStrId, String type)
-ArgumentCaptor,2回め呼ぶときどうなるか調べる
 Arrange:
 	UUID picId = UUID.randomUUID()
 	UUID orderId = UUID.randomUUID()
