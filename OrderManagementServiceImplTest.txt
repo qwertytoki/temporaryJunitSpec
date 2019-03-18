@@ -1476,13 +1476,17 @@ Assert:
 	
 ==========================================================
 checkOrderModifiedRemandedStatus(List<ResponsibleOrderInboxVo> responsibleOrderEntityList)
+//FIXME delete this method. you can directly call renderStatusLabel()
 Arrange:
-
+	ResponsibleOrderInboxVo bo
+	vo.orderStarusName = "test"
+	List<ResponsibleOrderInboxVo> list = Arrays.asList(vo)
 Mock:
-
+	renderStatusLabel(ANY) :Return list
 Act:
-
+	List<ResponsibleOrderInboxVo> resultList = checkOrderModifiedRemandedStatus(ANY)
 Assert:
+	resultList[0].orderStatusName == "test"
 ==========================================================
 loadLazyForApplying(OrderManagementEntity orderManagementEntity, UserSegmentEnum userSegment)
 
