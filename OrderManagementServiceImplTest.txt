@@ -1589,13 +1589,42 @@ Act:
 Assert:
 ==========================================================
 assignToUser(String orderStrId, String type)
+ArgumentCaptor,2回め呼ぶときどうなるか調べる
 Arrange:
+	UUID picId = UUID.randomUUID()
+	UUID orderId = UUID.randomUUID()
+	UUID headId = UUID.randomUUID()
+	Optional<PersonInCharge> pic
+	pic.personInChargeId = picId
+	pic.personInChargeName = "picName"
+	String type = "PROCUREMENT_REQUEST"
+	String tyepHoge = "hoge"
+
+	OrderPlanHeaderEntity ent 
+	ent.orderPlanId =headId
+	ent.orderStatus = "status"
+	OrderPlanDetailEntity detailEnt
+	List<OrderPlanDetailEntity> detailList = Arrays.asList(detailEnt)
+
 
 Mock:
-
+	personInChargeDao.get(ANY) :Return pic
+	orderPlanHeaderDao.getSingle(orderId) :Return ent
+	orderPlanDetailDao.getAllRecords(orderId) :Return detailList
 Act:
-
+	assignToUser(orderId.toString(),type)
 Assert:
+	// Note: Use ArgumentCaptor
+	verify(orderPlanHeaderDao, times(1)).insert(captor1);
+	captor1.getValue().orderPlanId == headId
+
+	verify(orderSearchRegisterService, times(1)).register(captor1,captor2,captor3,captor4,captor5);
+	captor1.getValue() == headId
+	captor2.getValue() == "status"
+	captor3.getValue() == ent
+	captor4.getValue() == detailList
+	
+
 ==========================================================
 insertChangedPurchaser(OrderManagementEntity orderManagementEntity)
 Arrange:
