@@ -1406,7 +1406,7 @@ Arrange:
 	vo1.supplierName = "supName"
 	vo2.supplierName = "notSup"
 	vo3.supplierName = "supName"
-	List<ResponsibleOrderInboxVo> volist = Arrays.asLis(vo1,vo2,vo3)
+	List<ResponsibleOrderInboxVo> volist = Arrays.asList(vo1,vo2,vo3)
 
 Mock:
 	getFilteredRecords(ANY) :Return voList
@@ -1923,6 +1923,7 @@ Assert:
 	resultEnt.atpList[0].detailNo == 2
 
 
+
 ==========================================================
 setResponsibleOrderData(UUID orderId)
 Arrange:
@@ -1935,12 +1936,28 @@ Assert:
 ==========================================================
 setOrderDashboardData(UUID orderId) 
 Arrange:
+	UUID id = UUID.randomUUID()
+	OrderDashboardOngoingEntity ent
+	UserId userId = UserId("userId")
 
+	List<OrderDashboardOngoingEntity>  list = Arrays.asList(ent)
 Mock:
-
+	orderDashboardOnGoingDao.getAllFilteredData(id) :Return list
+	scmUserContext.getUserId() :Return userId
 Act:
-
+	setOrderDashboardData(id)
 Assert:
+	// Note: Use ArgumentCaptor
+	verify(orderDashboardOnGoingDao, times(1)).deleteMultipleRows(captor1);
+	captor1.getValue() == id
+
+	verify(orderDashboardOnGoingDao, times(1)).insert(captor1);
+	List<OrderDashboardOngoingEntity> resultList = captor1.getValue()
+	resultList.size() == 1
+	resultList[0].rowType == "WAITING_FOR_ATP_ANSWER"
+	resultList[0].elementType =="WAITING_FOR_ATP_ANSWER_INPUT"
+	resultList[0].lastUpdateUser == "userId"
+
 ==========================================================
 zipFormattedData(List<String> orderIdList, String isDownload)
 Arrange:
