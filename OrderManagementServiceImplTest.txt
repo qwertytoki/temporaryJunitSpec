@@ -354,22 +354,22 @@ Assert:
 
 
 ==========================================================
-setHeaderLabelAndCount()
+setHeaderLabelAndCount(List<ResponsibleOrderInboxVo> responsibleOrderEntityList,String textIdString)
 Arrange:
-	ResponsibleOrderInboxVo vo1
-	ResponsibleOrderInboxVo vo2
+	ResponsibleOrderInboxVo vo1, vo2
+	vo1.status = "status1"
+	vo2.status = "status2"
 	List<ResponsibleOrderInboxVo> list = Arrays.asList(vo1,vo2)
-	WapStatsLabelVo resultVo
 
 Mock:
-	setHeaderLabel(ANY);
+	doNothing().when(orderManagementService).setHeaderLabelAndCount(capture1,capture2,capture3)
 Act:
-	setHeaderLabelAndCount(list)
+	setHeaderLabelAndCount(list,"test")
 Assert:
-	// Note: Use ArgumentCaptor
-
-	verify(OrderManagementService, times(1)).setHeaderLabel(captor1,captor2,captor3);
-	captor2.getValue() == list.size().toString()
+	capture1.getValue()[0].status == "status1"
+	capture1.getValue()[1].status == "status2"
+	capture2.getValue() == "2"
+	capture3.getValue() == "test"
 
 ==========================================================
 setHeaderLabel(List<ResponsibleOrderEntity> dataEntityList, String dataValue, String modeValue)
@@ -404,21 +404,22 @@ Arrange:
 	ResponsibleOrderInboxVo vo1
 	ResponsibleOrderInboxVo vo2
 	ResponsibleOrderInboxVo vo3
-	vo1.status ="PROC.POMT.quoting"
-	vo2.status ="PROC.POMT.quoting"
-	List<ResponsibleOrderInboxVo> voList
-	List<ResponsibleOrderInboxVo> filteredList
-	
+	vo1.status = "QUOTING"
+	vo2.status = "QUOTING"
+	vo3.status = "TEST"
+	List<ResponsibleOrderInboxVo> voList = Arrays.asList(vo1,vo2,vo3)
 Mock:
 	getFilteredRecords(ANY) :Return voList
-Act:
-	Map<String,Object> resultMap= loadProcurementList(ANY)
-Assert:
 	// Note: Use ArgumentCaptor
-	resultMap.get("data") == filteredList
-	verify(OrderManagementService, times(1)).loadProcurementList(captor1,captor2,captor3);
-	List<ResponsibleOrderInboxVo> resultList = captor1.getValue()
-	resultList.size() == "2"
+	doNothing().when(orderManagementService).setProcurementData(capture1)
+Act:
+	loadProcurementList(ANY)
+Assert:
+	List<ResponsibleOrderInboxVo>  list = captor1.getValue()
+	list.size() ==2
+	list[0].status == "QUOTING"
+	list[1].status == "QUOTING"
+
 
 ==========================================================
 setProcurementData()
@@ -713,11 +714,13 @@ Arrange:
 	entity.orderTitle = "test"
 Mock:
 	orderHeaderDao.getSingleByOrderNumber("12345") :Return entity
+	// Note: Use ArgumentCaptor
+	doNothing().when(orderManagementService).loadBarcodeInboxList(captor1,captor2,captor3);
+Act:
 Act:
 	loadBarcodeRecords(barcodeList)
 Assert:
 // Note: Use ArgumentCaptor
-	verify(OrderManagementService, times(1)).loadBarcodeInboxList(captor1,captor2,captor3);
 	captor1.getValue().orderTitle == "test"
 	captor2.getValue() == "6789"
 	
@@ -1410,10 +1413,12 @@ Arrange:
 
 Mock:
 	getFilteredRecords(ANY) :Return voList
+	// Note: Use ArgumentCaptor
+	doNothing().when(orderManagementService).setWaitForIssuanceData(captor1,captor2)
+Act:
 Act:
 	showInboxForExpand(ANY,ANY,ANY,ANY,"supName")
 Assert:
-	verify(OrderManagementService, times(1)).setWaitForIssuanceData(captor1,captor2);
 	captor1.getValue().size() == 2
 	captor1.getValue()[0].orderStatusName == "vo1"
 	captor1.getValue()[1].orderStatusName == "vo3"
@@ -1520,8 +1525,6 @@ Act:
 Assert:
 ==========================================================
 loadSwitchToVendor(UserSegmentEnum userSegment)
-OrderStatusちゃんと直してからコミット
-supplierの型を正してからコミット
 
 Arrange:
 	UUID sup1 = UUID.randomUUID()
@@ -1558,11 +1561,11 @@ Arrange:
 Mock:
 	getVendorFilteredRecords :Return entList
 	getFilteredRecords(ANY) :Return voList
+	// Note: Use ArgumentCaptor
+	doNothing().when(orderManagementService).setSwitchToVendorData(capture1)
 Act:
 	loadSwitchToVendor(ANY)
 Assert:
-	// Note: Use ArgumentCaptor
-	verify(OrderManagementService, times(1)).setSwitchToVendorData(captor1);
 	captor1.getValue()[0].supplierName == "suuplierName4"
 ==========================================================
 loadLazyWaitingForDelivery(OrderManagementEntity orderManagementEntity, UserSegmentEnum userSegment)
