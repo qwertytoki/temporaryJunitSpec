@@ -1765,31 +1765,164 @@ Assert:
 	
 ==========================================================
 insertToHeaderEntity(OrderHeaderEntity orderHeaderEntity, UUID orderId, OrderManagementEntity orderManagementEntity)
-Arrange:
+//FIXME change method name
+// insertToHeaderEntity -> updateHeaderEntityItems
 
+Arrange:
+	
+	UUID orderIdOld = UUID.randomUUID()
+	UUID orderId = UUID.randomUUID()
+	UUID mstId = UUID.randomUUID()
+	UUID mstIdIsNotPresent = UUID.randomUUID()
+	String mstIdStr = "mstId"
+	UUID picId = UUID.randomUUID()
+	UUID picIdIsNotPresent = UUID.randomUUID()
+	String picIdStr = "picId"
+
+	OrderHeaderEntity orderHeaderEntity
+	orderHeaderEntity.orderId = orderIdOld
+
+	OrderManagementEntity mngEnt1,mngEnt2,mngEnt3,mngEnt4
+	mngEnt1.purchaseMasterValue = mstId
+	mngEnt1.personInChargeId = picId
+	mngEnt1.masterInputValue = "mstInput"
+	mngEnt1.DepartmentInputValue = "deptInput"
+
+	mngEnt2.purchaseMasterValue = mstIdStr
+	mngEnt2.personInChargeId = null
+
+	mngEnt3.purchaseMasterValue = null
+	mngEnt3.personInChargeId = picIdStr
+
+	mngEnt4.purchaseMasterValue = mstIdIsNotPresent
+	mngEnt4.personInChargeId = picIdIsNotPresent
+	mngEnt4.masterInputValue = "mstInput"
+	mngEnt4.DepartmentInputValue = "deptInput"
+
+	PersonInCharge pic
+	pic.personInChargeName = "picName"
+	DeptInCharge dic 
+	dic.deptInChargeName = "dicName"
+	
 Mock:
+	personInChargeDao.get(picId,ANY): Return pic
+	deptInChargeDao.get(mstId,ANY): Return dic
+	
+	personInChargeDao.get(picIdIsNotPresent,ANY): Return null
+	deptInChargeDao.get(mstIdIsNotPresent,ANY): Return null
+
 
 Act:
-
+	OrderHeaderEntity ent1 = insertToHeaderEntity(orderHeaderEntity,orderId,mngEnt1)
+	OrderHeaderEntity ent2 = insertToHeaderEntity(orderHeaderEntity,orderId,mngEnt2)
+	OrderHeaderEntity ent3 = insertToHeaderEntity(orderHeaderEntity,orderId,mngEnt3)
+	OrderHeaderEntity ent4 = insertToHeaderEntity(orderHeaderEntity,orderId,mngEnt4)
 Assert:
+	ent1.orderId == orderId
+	ent1.orderPersonInChargeId == picId 
+	ent1.orderDeptInChargeId == mstId
+	ent1.orderPersonInChargeName == "picName"
+	ent1.orderDeptInChargeName == "dicName"
+	ent2.orderId == orderIdOld
+	ent3.orderId == orderIdOld
+	ent4.orderId == orderId
+	ent4.orderPersonInChargeId == picIdIsNotPresent 
+	ent4.OrderDeptInChargeId == mstIdIsNotPresent
+	ent1.orderPersonInChargeName == "mstInput"
+	ent1.orderDeptInChargeName == "deptInput"
+
 ==========================================================
 insertToPlanHeaderEntity(OrderPlanHeaderEntity orderPlanHeaderEntity, UUID orderId, OrderManagementEntity orderManagementEntity) 
-Arrange:
+//FIXME change method name
+// insertToPlanHeaderEntity -> updatePlanHeaderEntityItems
 
+Arrange:
+	
+	UUID orderIdOld = UUID.randomUUID()
+	UUID orderId = UUID.randomUUID()
+	UUID mstId = UUID.randomUUID()
+	UUID mstIdIsNotPresent = UUID.randomUUID()
+	String mstIdStr = "mstId"
+	UUID picId = UUID.randomUUID()
+	UUID picIdIsNotPresent = UUID.randomUUID()
+	String picIdStr = "picId"
+
+	OrderPlanHeaderEntity orderPlanHeaderEntity
+	orderPlanHeaderEntity.orderId = orderIdOld
+
+	OrderManagementEntity mngEnt1,mngEnt2,mngEnt3,mngEnt4
+	mngEnt1.purchaseMasterValue = mstId
+	mngEnt1.personInChargeId = picId
+	mngEnt1.masterInputValue = "mstInput"
+	mngEnt1.DepartmentInputValue = "deptInput"
+
+	mngEnt2.purchaseMasterValue = mstIdStr
+	mngEnt2.personInChargeId = null
+
+	mngEnt3.purchaseMasterValue = null
+	mngEnt3.personInChargeId = picIdStr
+
+	mngEnt4.purchaseMasterValue = mstIdIsNotPresent
+	mngEnt4.personInChargeId = picIdIsNotPresent
+	mngEnt4.masterInputValue = "mstInput"
+	mngEnt4.DepartmentInputValue = "deptInput"
+
+	PersonInCharge pic
+	pic.personInChargeName = "picName"
+	DeptInCharge dic 
+	dic.deptInChargeName = "dicName"
+	
 Mock:
+	personInChargeDao.get(picId,ANY): Return pic
+	deptInChargeDao.get(mstId,ANY): Return dic
+	
+	personInChargeDao.get(picIdIsNotPresent,ANY): Return null
+	deptInChargeDao.get(mstIdIsNotPresent,ANY): Return null
+
 
 Act:
-
+	OrderHeaderEntity ent1 = insertToHeaderEntity(orderHeaderEntity,orderId,mngEnt1)
+	OrderHeaderEntity ent2 = insertToHeaderEntity(orderHeaderEntity,orderId,mngEnt2)
+	OrderHeaderEntity ent3 = insertToHeaderEntity(orderHeaderEntity,orderId,mngEnt3)
+	OrderHeaderEntity ent4 = insertToHeaderEntity(orderHeaderEntity,orderId,mngEnt4)
 Assert:
+	ent1.orderPlanId == orderId
+	ent1.orderPersonInChargeId == picId 
+	ent1.orderDeptInChargeId == mstId
+	ent1.orderPersonInChargeName == "picName"
+	ent1.orderDeptInChargeName == "dicName"
+	ent2.orderPlanId == orderIdOld
+	ent3.orderPlanId == orderIdOld
+	ent4.orderPlanId == orderId
+	ent4.orderPersonInChargeId == picIdIsNotPresent 
+	ent4.OrderDeptInChargeId == mstIdIsNotPresent
+	ent4.orderPersonInChargeName == "mstInput"
+	ent4.orderDeptInChargeName == "deptInput"
+
 ==========================================================
 setOrderAvailabletoPromiseData(UUID orderId)
+
 Arrange:
-
+	UUID orderId = UUID.randomUUID()
+	OrderDetailEntity dEnt1,dEnt2
+	dEnt1.orderDetailNo = 1
+	dEnt2.orderDetailNo = 2
+ 
+	List<OrderDetailEntity> detailEntList = Arrays.asList(dEnt1,dent2)
 Mock:
-
+	orderDetailDao.getRecordsAll() :Return detailEntList
 Act:
-
+	setOrderAvailabletoPromiseData(orderId)
 Assert:
+	// Note: Use ArgumentCaptor
+	verify(orderAvailableToPromiseDao, times(1)).insert(captor1);
+	OrderAvailableToPromiseEntity resultEnt = captor1.getValue()
+	resultEnt.orderId ==orderId
+	resultEnt.isAnswered == 0
+	resultEnt.atpList[0].detailNo == 1
+	resultEnt.atpList[0].detailNo == 2
+
+
 ==========================================================
 setResponsibleOrderData(UUID orderId)
 Arrange:

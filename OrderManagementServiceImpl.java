@@ -2615,11 +2615,11 @@ public class OrderManagementServiceImpl implements OrderManagementService {
      */
     private void setOrderAvailabletoPromiseData(UUID orderId) {
 
-        List<Integer> detailNumberList = new ArrayList<Integer>();
         List<OrderDetailEntity> orderDetailEntityList = orderDetailDao.getRecordsAll(orderId);
-        orderDetailEntityList.stream().forEach(action -> {
-            detailNumberList.add(action.getOrderDetailNo());
-        });
+        List<Integer> detailNumberList =  orderDetailEntityList
+                .stream()
+                .forEach(action -> {detailNumberList.add(action.getOrderDetailNo());
+                });
 
         OrderAvailableToPromiseEntity orderAvailableToPromiseEntity = new OrderAvailableToPromiseEntity();
         orderAvailableToPromiseEntity.setOrderId(orderId);
