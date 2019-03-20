@@ -2030,7 +2030,6 @@ Arrange:
 Mock:	
 	orderReportService.prepareDefaultReportEntitiesForPdf(ANY) return entsDl
 	orderReportService.prepareDefaultReportEntitiesForPrint(ANY) return entsPrint
-
 Act:
 	zipFormattedData(orderIdStrList,"Download")
 	zipFormattedData(orderIdList,"Download")
@@ -2049,15 +2048,9 @@ Act:
 Assert:
 ==========================================================
 getMessageWithParam(String textId)
-Arrange:
+//FIXME delete this method. not effectable.
 
-Mock:
-
-Act:
-
-Assert:
 ==========================================================
-
 downloadSelectedData(UUID orderId, List<String> listValue)
 Arrange:
 
