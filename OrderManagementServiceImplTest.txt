@@ -2030,6 +2030,7 @@ Arrange:
 Mock:	
 	orderReportService.prepareDefaultReportEntitiesForPdf(ANY) return entsDl
 	orderReportService.prepareDefaultReportEntitiesForPrint(ANY) return entsPrint
+
 Act:
 	zipFormattedData(orderIdStrList,"Download")
 	zipFormattedData(orderIdList,"Download")
@@ -2040,43 +2041,131 @@ Assert:
 ==========================================================
 loadDialogData(OrderManagementEntity orderManagementEntity)
 Arrange:
+	OrderManagementEntity mngEntNoNeedRepo,mngEntMustRepo,mngEntNull
+	UUID orderIdNoNeedRepo = UUID.randomUUID()
+	UUID orderIdMustRepo = UUID.randomUUID()
+	UUID orderIdNull = UUID.randomUUID()
+
+	mngEntNoNeedRepo.printsDialogDataList = Arrays.asList(orderIdNoNeedRepo)
+	mngEntMustRepo.printsDialogDataList = Arrays.asList(orderIdMustRepo)
+	mngEntNull.printsDialogDataList = Arrays.asList(orderIdNull)
+	OrderHeaderEntity entityNoNeedRepo,entityMustRepo,entityNull
+	
+	OrderDetailEntity detail1,detail2
+	List<OrderDetailEntity> detailList = Arrays.asList(detail1,detail2)
+	
+	ProcurementReceiptEntity receiptNoNeedrepo receiptMustRepo,receiptNull
+	receiptNoNeedrepo.hasMustReport = false
+	receipt.itemName = "receiptNoNeedrepo"
+	receiptMustRepo.hasMustReport = true
+	receipt.itemName = "receiptMustRepo"
+	receiptNull.hasMustReport = null
+	receipt.itemName = "receiptNull"
 
 Mock:
+	orderHeaderDao.getOrderHeaderEntity(orderIdNoNeedRepo) :Return entityNoNeedRepo
+	orderHeaderDao.getOrderHeaderEntity(orderIdMustRepo) :Return entityMustRepo
+	orderHeaderDao.getOrderHeaderEntity(orderIdNull) :Return entityNull
+	orderDetailDao.getOrderDetails(ANY) :Return detailList
+	createRecieptEntity(entityNoNeedRepo,detailList) :Return receiptNoNeedrepo
+	createRecieptEntity(entityMustRepo,detailList) :Return receiptMustRepo
+	createRecieptEntity(entityNull,detailList) :Return receiptNull
 
 Act:
-
+	Tuple2<List<ProcurementReceiptEntity>, WapTextLabelVo> tupleNoNeedRepo = loadDialogData(mngEntNoNeedRepo)
+	Tuple2<List<ProcurementReceiptEntity>, WapTextLabelVo> tupleMustRepo = loadDialogData(mngEntMustRepo)
+	Tuple2<List<ProcurementReceiptEntity>, WapTextLabelVo> tupleNull = loadDialogData(mngEntNull)
+	textResourceManager.getText("PC.POMT.DialogNoReportAvalilable") :Return "PC.POMT.DialogNoReportAvalilable" 
+	textResourceManager.getText("PC.POMT.DialogSomeReportNotAvalilable") :Return "PC.POMT.DialogSomeReportNotAvalilable" 
 Assert:
+	tupleNoNeedRepo[0][0].itemName =="receiptNoNeedrepo"
+	tupleNoNeedRepo[1].messageType == "error"
+	tupleNoNeedRepo[1].label == "PC.POMT.DialogNoReportAvalilable"
+	tupleMustRepo[0][0].itemName =="receiptMustRepo"
+	tupleMustRepo[1].messageType == "warning"
+	tupleMustRepo[1].label == "PC.POMT.DialogSomeReportNotAvalilable" 
+	tupleNull[0][0].itemName =="receiptNull"
+	tupleNull[1].display == "hidden"
 ==========================================================
 getMessageWithParam(String textId)
-//FIXME delete this method. not effectable.
-
+//FIXME delete this uneffectable method 
 ==========================================================
+
 downloadSelectedData(UUID orderId, List<String> listValue)
-Arrange:
-
-Mock:
-
-Act:
-
-Assert:
+//NO need to test
 ==========================================================
 printSelectedData(List<String> orderIdStrings)
+// Note: this test spec is not good. We need to cature "entities" value in future.
+
 Arrange:
-
-Mock:
-
+	UUID orderId1 = UUID.randomUUID()
+	UUID orderId2 = UUID.randomUUID()
+	String orderId1Str = "orderId1"
+	String orderId2Str = "orderId2"
+	List<String> orderIdList = Arrays.asList(orderId1.toString(),orderId2.toString())
+	List<String> orderIdStrList = Arrays.asList(orderIdStr1,orderIdStr2)
+	ReportSettingEntity ent1 ent2 ent3
+	ent1.downloadFilename = "fileName1"
+	ent2.downloadFilename = "fileName2"
+	ent3.downloadFilename = "fileName3"
+	
+	entsDl.add(mapDl)
+	Map<String ReportSettingEntity> mapPrint
+	mapPrint.put("ent1",ent1)
+	mapPrint.put("ent2",ent2)
+	mapPrint.put("ent3",ent3)
+	ReportSettingEntities entsPrint
+	entsPrint.add(mapPrint)
+	
+Mock:	
+	orderReportService.prepareDefaultReportEntitiesForPrint(ANY) return entsPrint
 Act:
-
+	printSelectedData(orderIdStrList,"Download")
 Assert:
+    Mockito.verify(entities, Mockito.times(1)).toZipFormattedMap();
+
 ==========================================================
 inputContractDate(OrderManagementEntity orderManagementEntity)
+//FIXME add "UUIDValidator.isUUID(orderId)"
 Arrange:
+	OrderManagementEntity mngEnt,mngEntIdStr
+	UUID orderId = UUID.randomUUID()
+	mngEnt.redeemValue = "2019/04/01"
+	mngEnt.orderIdList = orderId.toString()
+	OrderHeaderEntity head
+	head.orderStatus = "status"
+	head.orderId = orderId
+	OrderDetailEntity detail
+	List<OrderDetailEntity> detailList = Arrays.asList(detail)
+
+	mngEntIdStr
+	orderHeaderDao.getOrderHeaderEntity(ANY) :Return 
 
 Mock:
-
+	textResourceManager.getText("PC.POMT.waitDelivery") : Return "test"
+	scmUserContext.getUserId(): Return UserId.of("userId")
+	doNothing().when(orderManagementService).setOrderAvailabletoPromiseData(promiseCaptor)
+	doNothing().when(orderManagementService).setResponsibleOrderData(resCaptor)
 Act:
-
+	inputContractDate(mngEnt)
 Assert:
+	verify(responsibleOrderDao, times(1)).insert(captor1);
+	captor1.getValue().orderStatus == "status"
+	verify(orderSearchRegisterService, times(1)).register(captor1,captor2,captor3,captor4,captor5);
+	captor1.getValue()==orderId
+	captor2.getValue()=="status"
+	captor3.getValue()==head
+	captor4.getValue()==detail
+	captor5.getValue()==user
+	verify(orderConfirmationService, times(1)).setOrderConfirmationData(captor1);
+	captor1.getValue() == orderId
+	promiseCaptor.getValue() == orderId
+	resCaptor.getValue() == orderId
+	verify(orderConfirmationService, times(1)).updateRowTypeAndElementTypeOnGoingAfterStatusChangeOnHeader(captor1,captor2,captor3);
+	captor1.getValue() == orderId
+	captor2.getValue() == "WAITING_FOR_ATP_ANSWER"
+	captor3.getValue() == "WAITING_FOR_ATP_ANSWER_INPUT"
+
 ==========================================================
 insertData(List<String> sessionList, OrderManagementEntity orderManagementEntity)]
 Arrange:
