@@ -1926,16 +1926,56 @@ Assert:
 	resultEnt.atpList[0].detailNo == 2
 
 
-
 ==========================================================
 setResponsibleOrderData(UUID orderId)
 Arrange:
+	UUID orderId = UUID.randomUUID()
+	ResponsibleOrderEntity orderEnt1,orderEnt2
+	orderEnt1.userId = "userId1"
+	orderEnt1.type = "type1"
+	orderEnt1.baseDate = "baseDate1"
+	orderEnt1.personalDiv = "personalDiv1"
+	orderEnt1.orderId = orderId1"
 
+	orderEnt1.userId = "userId2"
+	orderEnt1.type = "type2"
+	orderEnt1.baseDate = "baseDate2"
+	orderEnt1.personalDiv = "personalDiv2"
+	orderEnt1.orderId = orderId2"
+
+	List<ResponsibleOrderEntity> orderEntList = Arrays.asList(orderEnt1,orderEnt2)
 Mock:
-
+	responsibleOrderDao.getAllFilteredData(orderId) :Return orderEntList
+	textResourceManager.getText("PC.POMT.waitDelivery") return "text"
+	scmUserContext.getUserId() :Return UserId("user")
 Act:
 
+
 Assert:
+	verify(responsibleOrderDao, times(1)).deleteMultipleRows(captor1);
+	List<Object> deleteList = captor1.getValue()
+	deleteList[0].userId == "userId1"
+	deleteList[0].type == "type1"
+	deleteList[0].baseDate == "baseDate1"
+	deleteList[0].personalDiv == "personalDiv1"
+	deleteList[0].orderId == orderId1"
+	deleteList[1].userId == "userId2"
+	deleteList[1].type == "type2"
+	deleteList[1].baseDate == "baseDate2"
+	deleteList[1].personalDiv == "personalDiv2"
+	deleteList[1].orderId == orderId2"
+
+	verify(responsibleOrderDao, times(1)).insert(captor1);
+	List<Object> insertList = captor1.getValue()
+	insertList[0].type == "WAITING_FOR_ATP_ANSWER_INPUT"
+	insertList[0].orderStatus == "WAITING_FOR_ATP_ANSWER"
+	insertList[0].orderStatusName "text"
+	insertList[0].lastUpdateUser == "user"
+	insertList[1].type == "WAITING_FOR_ATP_ANSWER_INPUT"
+	insertList[1].orderStatus == "WAITING_FOR_ATP_ANSWER"
+	insertList[1].orderStatusName "text"
+	insertList[1].lastUpdateUser == "user"
+	
 ==========================================================
 setOrderDashboardData(UUID orderId) 
 Arrange:
@@ -1963,13 +2003,41 @@ Assert:
 
 ==========================================================
 zipFormattedData(List<String> orderIdList, String isDownload)
-Arrange:
+// Note: this test spec is not good. We need to cature "entities" value in future.
 
-Mock:
+Arrange:
+	UUID orderId1 = UUID.randomUUID()
+	UUID orderId2 = UUID.randomUUID()
+	String orderId1Str = "orderId1"
+	String orderId2Str = "orderId2"
+	List<String> orderIdList = Arrays.asList(orderId1.toString(),orderId2.toString())
+	List<String> orderIdStrList = Arrays.asList(orderIdStr1,orderIdStr2)
+	ReportSettingEntity ent1 ent2 ent3
+	ent1.downloadFilename = "fileName1_DL"
+	ent2.downloadFilename = "fileName2_DL"
+	ent3.downloadFilename = "fileName3_Print"
+	
+	Map<String ReportSettingEntity> mapDl
+	mapDl.put("ent1",ent1)
+	mapDl.put("ent2",ent2)
+	ReportSettingEntities entsDl
+	entsDl.add(mapDl)
+	Map<String ReportSettingEntity> mapPrint
+	mapPrint.put("ent3",ent3)
+	ReportSettingEntities entsPrint
+	entsPrint.add(mapPrint)
+	
+Mock:	
+	orderReportService.prepareDefaultReportEntitiesForPdf(ANY) return entsDl
+	orderReportService.prepareDefaultReportEntitiesForPrint(ANY) return entsPrint
 
 Act:
-
+	zipFormattedData(orderIdStrList,"Download")
+	zipFormattedData(orderIdList,"Download")
+	zipFormattedData(orderIdList,"Print")
+	zipFormattedData(orderIdList,"Null")
 Assert:
+    Mockito.verify(entities, Mockito.times(4)).toZipFormattedMap();
 ==========================================================
 loadDialogData(OrderManagementEntity orderManagementEntity)
 Arrange:
