@@ -2887,8 +2887,6 @@ public class OrderManagementServiceImpl implements OrderManagementService {
     public void insertData(List<String> sessionList, OrderManagementEntity orderManagementEntity) {
 
         List<String> orderIdList = new ArrayList<String>();
-        sessionList.forEach(action -> {
-        });
 
         List<Map<String, Object>> gridDataList = orderManagementEntity.getGridData();
 

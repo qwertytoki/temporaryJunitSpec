@@ -2167,14 +2167,71 @@ Assert:
 	captor3.getValue() == "WAITING_FOR_ATP_ANSWER_INPUT"
 
 ==========================================================
-insertData(List<String> sessionList, OrderManagementEntity orderManagementEntity)]
+insertData(List<String> sessionList, OrderManagementEntity orderManagementEntity)
+// List<Map<String, Object>> gridDataList = orderManagementEntity.getGridData();
+// ここのデータに何が入ってくるのか確認
+
 Arrange:
+	ZonedDateTime today = ZonedDateTime.now()
+	UUID orderId1 = UUID.randomUUID()
+	UUID orderId2 = UUID.randomUUID()
+	orderIdList = Arrays.asList(orderId1,orderId2)
+	Map<String, Object> map1
+	map1.put("orderDate",today)
+	List<Map<String, Object>> gridDataList = Arrays.asList(map1)
+	OrderHeaderEntity head1,head2
+	List<OrderHeaderEntity> heads =Arrays.asList(head1,head2) 
+	UserId userId = UserId.of("user") 
+	OrderConfirmationAnswerEntity conf1,conf2
+	conf1.orderId = orderId1
+	conf1.confirmationId = "confId"
+	conf1.isAnswered =1
+	
+	//ここ名前確認
+	Entity a1,a2
+	a1.isOk=1
+	a1.isOk=2
+	conf1.confirmationAnswerList = Arrays.asList(a1,a2)
 
+	conf2.orderId = "id"
+	List<OrderConfirmationAnswerEntity> confList = Arrays.asList(conf1,conf2)
 Mock:
-
+	orderManagementEntity.getGridData() Return gridDataList
+	orderHeaderDao.getMultiple(orderIdList) Return heads
+	textResourceManager.getText("PC.POMT.waitDelivery) :Return "text"
+	scmUserContext.getUserId() :return userId
+	orderConfirmationAnswerDao.getAll() :Return confList
+	
+	orderHeaderDao.insertMultiple(headCaptor)
+	orderConfirmationAnswerDao.insertMultiple(confCaptor):doNothing
+	setOrderAvailabletoPromiseData(captor1):doNothing
+	setResponsibleOrderData(captor2):doNothing
+    setOrderDashboardData(captor3):doNothing
 Act:
 
 Assert:
+	List<OrderHeaderEntity> resultHeads = headCaptor.getValue()
+	resultHeads.size() == 2
+	resultHeads[0].confirmationDate==today
+	resultHeads[0].orderStatus == OrderStatus.WAITING_FOR_ATP_ANSWER
+	resultHeads[0].orderStatusName == "test"
+	resultHeads[0].lastUpdateUserId == "user"
+	resultHeads[1].confirmationDate==today
+	resultHeads[1].orderStatus == OrderStatus.WAITING_FOR_ATP_ANSWER
+	resultHeads[1].orderStatusName == "test"
+	resultHeads[1].lastUpdateUserId == "user"
+
+	resultConfs = confCaptor.getValue()
+	resultConfs.size() ==1
+	resultConfs[0].confirmationId == "confId"
+	resultConfs[0].isAnswered == 1
+	resultConfs[0].confirmationAnswerList.size() == 2
+	resultConfs[0].confirmationAnswerList[0].isOk == 1
+
+	captor1.getValue == orderId
+	captor2.getValue == orderId
+	captor3.getValue == orderId
+	
 ==========================================================
 etZonedDate(Object objectValue)
 Arrange:
