@@ -2324,20 +2324,16 @@ Assert:
 
 ==========================================================
 createRecieptEntity(OrderHeaderEntity orderHeaderEntity,List<OrderDetailEntity> orderDetailEntityList)
-// NumberFormat.getNumberInstance().format ここ何入るか確認 多分 10000->10,000 こうなる
-// ZoneIdなに入れたらいいか確認
-// DateStyle.LONGすると何が起きるか確認
-// PurposeOfPurchase型確認 どうせString
 
 Arrange:
 	UUID id = UUID.randomUUID()
-	ZonedDateTime today = ZonedDateTime.now()
-	LocalDate localToday = LocalDate.now()
+	ZonedDateTime aprilFool = ZonedDateTime.of(2019, 4, 1, 0, 0, 0, 0, ZoneId.of("Asia/Tokyo"));
+	LocalDate localAprilFool = LocalDate.of(2019, 04, 01);
 
 	OrderHeaderEntity head
 	head.orderId(id)
 	head.orderTitle("title")
-	head.DesiredDeliveryDateTime(today)
+	head.DesiredDeliveryDateTime(aprilFool)
 	head.totalTaxIncludedAmount = 10000)
 	head.purposeOfPurchase = "purpose")
 	head.supplierName =MLString("supplier","EN")
@@ -2353,7 +2349,7 @@ Arrange:
 	
 Mock:
 	scmUserContext.getLocale() :Return Locale.of("EN")
-	convertToLocalDate(ANY)  :Return localToday
+	convertToLocalDate(ANY)  :Return localAprilFool
 	reportUsageDecisionService.decideAll() return null
 	textResourceManager.getText(OrderReportUsageConstants.TEXT_ID_NO_REPORT_TO_PRINT_ROW) :Return "test"
 Act:
@@ -2362,8 +2358,8 @@ Act:
 Assert:
 	result.orderId == head.orderId
 	result.orderTitle == id
-	result.desiredDeliveryDate == localToday
-	result.desiredDeliveryDateString == DateTimeUtils.format(localToday,DateStyle.LONG) //FIXME
+	result.desiredDeliveryDate == localAprilFool
+	result.desiredDeliveryDateString == "1 April 2019"
 	result.purposeOfPurchase == "purpose"
 	result.supplierName=="supplier"
 	result.itemName == "name1,name2"
