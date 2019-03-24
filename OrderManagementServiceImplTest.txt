@@ -2234,12 +2234,22 @@ Assert:
 ==========================================================
 getZonedDate(Object objectValue)
 Arrange:
-
+	ZonedDateTime expectTime =  ZonedDateTime.of(2019, 4, 1, 0, 0, 0, 0, ZoneId.of("Asia/Tokyo"));	
+	Object value = "2019/04/01";
+	Object valueError  = "hoge"
 Mock:
 
-Act:
-
+Act1:
+	ZonedDateTime date = getZonedDate(value)
 Assert:
+	date == expectTime
+
+Act2:
+	getZonedDate(valueError)
+Assert:
+	fail();
+	catch ParseException
+
 ==========================================================
 loadOrderData(List<String> orderBarcodeList, Map<String, Object> returnMap)
 Arrange:
@@ -2363,7 +2373,6 @@ Assert:
 	resultNeedNotReport.hasMustReport == true
 	resultNeedNotReport.totalTaxIncludedAmount == "10,000"
 	
-
 ==========================================================
 convertToLocalDate(ZonedDateTime desiredDeliveryDateTime)
 Arrange:
