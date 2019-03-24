@@ -2969,7 +2969,7 @@ public class OrderManagementServiceImpl implements OrderManagementService {
      *
      */
     @Override
-    public Map<String, Object> loadOrderDate(List<String> orderBarcodeList, Map<String, Object> returnMap) {
+    public Map<String, Object> loadOrderData(List<String> orderBarcodeList, Map<String, Object> returnMap) {
 
         List<Map<String, Object>> collectiveOrderList = new ArrayList<Map<String, Object>>();
 

@@ -2168,8 +2168,6 @@ Assert:
 
 ==========================================================
 insertData(List<String> sessionList, OrderManagementEntity orderManagementEntity)
-// List<Map<String, Object>> gridDataList = orderManagementEntity.getGridData();
-// ここのデータに何が入ってくるのか確認
 
 Arrange:
 	ZonedDateTime today = ZonedDateTime.now()
@@ -2188,7 +2186,7 @@ Arrange:
 	conf1.isAnswered =1
 	
 	//ここ名前確認
-	Entity a1,a2
+	ConfirmationAnswers a1,a2
 	a1.isOk=1
 	a1.isOk=2
 	conf1.confirmationAnswerList = Arrays.asList(a1,a2)
@@ -2233,7 +2231,7 @@ Assert:
 	captor3.getValue == orderId
 	
 ==========================================================
-etZonedDate(Object objectValue)
+getZonedDate(Object objectValue)
 Arrange:
 
 Mock:
@@ -2242,14 +2240,40 @@ Act:
 
 Assert:
 ==========================================================
-loadOrderDate(List<String> orderBarcodeList, Map<String, Object> returnMap)
+loadOrderData(List<String> orderBarcodeList, Map<String, Object> returnMap)
 Arrange:
+	Map<String, Object> returnMap
+	UUID id1 id2 = UUID.randomUUID()
+	List<String> orderBarcodeList = Arrays.asList(id1.toString(),id2.toString())
+	OrderHeaderEntity ent1,ent2
+	ent1.orderNo = "orderNo1"
+	ent1.orderTitle = "orderTitle1"
+	ent1.supplierName = MLString("supplier1","EN")
+	ent1.totalTaxIncludedAmount = 1
+	ent2.orderNo = "orderNo2"
+	ent2.orderTitle = "orderTitle2"
+	ent2.supplierName = MLString("supplier2","EN")
+	ent2.totalTaxIncludedAmount = 2
+
+	List<OrderHeaderEntity> entList = Arrays.asList(ent1,ent2)
 
 Mock:
-
+	orderHeaderDao.getMultiple(entList) : Return entList
 Act:
-
+	Map<String, Object> resultMap = Map<String, Object> loadOrderData(orderBarcodeList,returnMap)
 Assert:
+	resultList = resultMap.get("placementOrderGrid")
+	resutList[0].get("orderNumber")=="orderNo1"
+	resutList[0].get("orderTitle")=="orderTitle"
+	resutList[0].get("supplierName")=="supplier1"
+	resutList[0].get("totalTaxIncludedAmount")=="1"
+
+	resutList[1].get("orderNumber")=="orderNo2"
+	resutList[1].get("orderTitle")=="orderTitle"
+	resutList[1].get("supplierName")=="supplier2"
+	resutList[1].get("totalTaxIncludedAmount")=="2"
+	
+	
 ==========================================================
 
 loadDialogDataValue(OrderManagementEntity orderManagementEntity)
