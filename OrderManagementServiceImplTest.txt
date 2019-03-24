@@ -2366,18 +2366,20 @@ Assert:
 	result.hasMustReport == true
 	result.totalTaxIncludedAmount == "test"
 
-	resultNeedNotReport.hasMustReport == true
+	resultNeedNotReport.hasMustReport == false
 	resultNeedNotReport.totalTaxIncludedAmount == "10,000"
 	
 ==========================================================
 convertToLocalDate(ZonedDateTime desiredDeliveryDateTime)
 Arrange:
-
+	ZonedDateTime aprilFool = ZonedDateTime aprilFool = ZonedDateTime.of(2019, 4, 1, 0, 0, 0, 0, ZoneId.of("Asia/Tokyo"));
+	LocalDate localAprilFool = LocalDate.of(2019, 04, 01);
 Mock:
-
+	context.getZoneId():Return ZoneId.of("Asia/Tokyo")
 Act:
-
+	LocalDate date = convertToLocalDate(aprilFool)
 Assert:
+	date == localAprilFool
 ==========================================================
 performAutoComplete(String keyword, int caretPosition)
 Arrange:
