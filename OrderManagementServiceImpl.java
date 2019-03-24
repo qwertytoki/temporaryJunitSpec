@@ -3100,17 +3100,18 @@ public class OrderManagementServiceImpl implements OrderManagementService {
 
         List<AutocompleteTypeSetting> typeSettingsList = new ArrayList<>();
         List<String> fetchFieldList = OrderManagementConstant.SEARCH_FETCH_FIELD_LIST;
-        AutocompleteEntity autocompleteEntity = new AutocompleteEntity();
-        autocompleteEntity.setPrefix(keyword);
-        autocompleteEntity.setCaretPosition(caretPosition);
         AutocompleteTypeSetting typeSetting = new AutocompleteTypeSetting();
         typeSetting.setType(OrderManagementConstant.SCM_PROCUREMENT_PURCHASE_ORDER_SEARCH);
         typeSetting.setSearchGroupName(OrderManagementConstant.AC);
         typeSetting.setFetchFields(fetchFieldList);
-
         typeSetting.setMapper(new HitDocumentResponseMapper());
         typeSettingsList.add(typeSetting);
+
         Autocompleter autocompleter = factory.create(typeSettingsList);
+        AutocompleteEntity autocompleteEntity = new AutocompleteEntity();
+        autocompleteEntity.setPrefix(keyword);
+        autocompleteEntity.setCaretPosition(caretPosition);
+        
         AutocompleteResult result = autocompleter.search(autocompleteEntity);
         Map<String, Object> docsMap = result.getHitDocs();
         FullTextSearchResult customerNameList = (FullTextSearchResult)docsMap

@@ -2383,12 +2383,36 @@ Assert:
 ==========================================================
 performAutoComplete(String keyword, int caretPosition)
 Arrange:
-
+	Autocompleter autocompleter
+	AutocompleteResult result
+	Map<String, Object> docsMap
+	FullTextSearchResult customerNameList
+	hit1,hit2
+	Map<String,Object>hitMap1,hitMap2
+	hitMap1.put(OrderManagementConstant.ORDER_TITLE,"title1")
+	hitMap1.put(OrderManagementConstant.ORDER_STATUS_JSON,"status1")
+	hit1.docField =hitMap1
+	hitMap2.put(OrderManagementConstant.ORDER_TITLE,"title2")
+	hitMap2.put(OrderManagementConstant.ORDER_STATUS_JSON,"status2")
+	hit2.docField =hitMap2
+	customerNameList.hits = Arrays.asList(hit1,hit2)
+	docsMap.put(OrderManagementConstant.SCM_PROCUREMENT_PURCHASE_ORDER_SEARCH,customerNameList)
+	result.hitDocs = docsMap
 Mock:
-
+	factory.create(typeSettingsList) :Return autocompleter
+	autocompleter.search(ANY) :Return result
 Act:
+	List<Map<String, String>> dataList =performAutoComplete("keyword",1)
 
 Assert:
+	dataList.size() ==2
+	dataList[0].get("text") ="title1 status1"
+	dataList[0].get("icon") = OrderManagementConstant.SEARCH
+	dataList[0].get("value") = "title1 status1"
+
+	dataList[1].get("text") ="title2 status2"
+	dataList[1].get("icon") = OrderManagementConstant.SEARCH
+	dataList[1].get("value") = "title2 status2"
 ==========================================================
 replaceHighlight(String keyword, String columnValue)
 Arrange:
