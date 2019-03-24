@@ -2961,7 +2961,7 @@ public class OrderManagementServiceImpl implements OrderManagementService {
     }
 
     /**
-     * return order datas by using scanned barcode list
+     * return order datas by using scanned barcode list from barcode scanners
      *
      * @param orderBarcodeList
      * @param returnMap
@@ -2997,7 +2997,7 @@ public class OrderManagementServiceImpl implements OrderManagementService {
     }
 
     /**
-     * loadDialogDataValue Load dialog data value.
+     * Return dialog data. Also return error label if isHasMustReport == true
      *
      * @param orderManagementEntity
      *            the order management entity
@@ -3024,11 +3024,13 @@ public class OrderManagementServiceImpl implements OrderManagementService {
         return Tuple2.of(procurementReceiptEntityList, errorLabelVo);
     }
 
+
+    /**
+     *  return RecepitEntity from head and details.
+     */
     private ProcurementReceiptEntity createRecieptEntity(OrderHeaderEntity orderHeaderEntity,
             List<OrderDetailEntity> orderDetailEntityList) {
         ProcurementReceiptEntity procurementReceiptEntity = new ProcurementReceiptEntity();
-        Locale locale = scmUserContext.getLocale();
-
         procurementReceiptEntity.setOrderId(orderHeaderEntity.getOrderId());
         procurementReceiptEntity.setOrderTitle(orderHeaderEntity.getOrderTitle());
         procurementReceiptEntity.setDesiredDeliveryDate(convertToLocalDate(orderHeaderEntity
@@ -3046,6 +3048,7 @@ public class OrderManagementServiceImpl implements OrderManagementService {
         }
         StringBuilder nameList = new StringBuilder();
         ListIterator<OrderDetailEntity> it = orderDetailEntityList.listIterator();
+        Locale locale = scmUserContext.getLocale();
         while (it.hasNext()) {
             OrderDetailEntity entity = it.next();
             if (entity.getItemNameML() != null) {
