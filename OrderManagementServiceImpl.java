@@ -2961,7 +2961,7 @@ public class OrderManagementServiceImpl implements OrderManagementService {
     }
 
     /**
-     * loadOrderDate function is used to insert the date of order
+     * return order datas by using scanned barcode list
      *
      * @param orderBarcodeList
      * @param returnMap
