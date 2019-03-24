@@ -2420,8 +2420,13 @@ Arrange:
 Mock:
 
 Act:
-
+	String empty = replaceHighlight("","")
+	String hoge = replaceHighlight("hoge","")
+	String result = replaceHighlight("test1 test2","hogeTEST2hogehoge")
 Assert:
+	empty == StringUtils.EMPTY
+	hoge == "hoge"
+	result == "TEST2"
 ==========================================================
 getSwitchToVendorPrintOrderId(String userId, long corpId, UserSegmentEnum userSegment,String type, List<String> supplierNameList)
 Arrange:
