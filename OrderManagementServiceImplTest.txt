@@ -205,7 +205,6 @@ Assert:
 
 
 ==========================================================
-
 loadProvisionalData()
 
 Arrange:
@@ -852,7 +851,6 @@ Assert:
 	resultMap.get("processHeaderLabel") ==null
 ==========================================================
 loadProceedingsList(String userId, Long corpId, UUID deptInChargeId, UUID personInChargeId)
-// FIXME Delete userId which is not used. 
 // FIXME Not to useDirectly  orderManagementDetailEntityList.addAll(responsibleOrderDao.getFilteredRecords())   
 // But Use          List<ResponsibleOrderEntity> orderPlanEntityList = responsibleOrderDao.getFilteredRecords()
 //                  orderManagementDetailEntityList.addAll(orderPlanEntityList)
@@ -887,16 +885,25 @@ Mock:
 	buildPendingProvisionOrderMessage(1) : Return entityEmpty
 Act:
 	List<OrderManagementPortalEntity> emptyResultList = loadProceedingsList(null,null,null)
-	List<OrderManagementPortalEntity> resultList = loadProceedingsList(ANY,deptInChargeId,personInChargeId)
+	List<OrderManagementPortalEntity> resultPicNullList = loadProceedingsList(ANY,deptInChargeId,null)
+	List<OrderManagementPortalEntity> resultDicNullList = loadProceedingsList(ANY,null,personInChargeId)
 Assert:
-	emptyResultList.size() == 0
-	resultList.size() ==6
-	resultList[0].rowDatas == "1"
-	resultList[1].rowDatas == "2"
-	resultList[2].rowDatas == "3"
-	resultList[3].rowDatas == "4"
-	resultList[4].rowDatas == "5"
-	resultList[5].rowDatas == null
+	emptyresultPicNullList.size() == 0
+	resultPicNullList.size() ==6
+	resultPicNullList[0].rowDatas == "1"
+	resultPicNullList[1].rowDatas == "2"
+	resultPicNullList[2].rowDatas == "3"
+	resultPicNullList[3].rowDatas == "4"
+	resultPicNullList[4].rowDatas == "5"
+	resultPicNullList[5].rowDatas == null
+
+	resultDicNullList.size() ==6
+	resultDicNullList[0].rowDatas == "1"
+	resultDicNullList[1].rowDatas == "2"
+	resultDicNullList[2].rowDatas == "3"
+	resultDicNullList[3].rowDatas == "4"
+	resultDicNullList[4].rowDatas == "5"
+	resultDicNullList[5].rowDatas == null
 
 ==========================================================
 getCountByOrderStatus(Map<String, List<ResponsibleOrderEntity>> rowTypeOrderedMap, String rowType)
